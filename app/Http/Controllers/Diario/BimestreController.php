@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\Diario;
 
 use App\Http\Controllers\Controller;
-use App\Models\Disciplina;
-use App\Models\NotaTipo;
-use App\Models\PeriodoTurma;
-use App\Models\Turma;
-use Illuminate\Http\Request;
 
-class NotaTipoController extends Controller
+
+use App\Models\Admin\Disciplina;
+use App\Models\Admin\Turma;
+use App\Models\Admin\TurmaProfessor;
+use App\Models\Diario\PeriodoTurma;
+use App\Models\Diario\TipoNota;
+
+
+
+class BimestreController extends Controller
 {
 
-    public function listarNotas(Turma $turma, Disciplina $disciplina)
+    public function listar(Turma $turma, Disciplina $disciplina)
     {
-        $periodos = PeriodoTurma::where('turma_id',$turma->id)
+        $periodos = Professor::where('turma_id',$turma->id)
             ->where('disciplina_id',$disciplina->id)
             ->where('escola_id',1)
             ->where('anoletivo_id',1)
@@ -29,7 +33,7 @@ class NotaTipoController extends Controller
 
         foreach ($periodos as $periodo){
 
-                $nota_tipos = NotaTipo::where('turma_id',$turma->id)
+                $nota_tipos = TipoNota::where('turma_id',$turma->id)
                     ->where('disciplina_id',$disciplina->id)
                     ->where('periodo_id',$periodo->id)
                     ->where('escola_id',1)
@@ -77,7 +81,7 @@ class NotaTipoController extends Controller
 
         }
 
-        return view('diario.nota.notatipos',[
+        return view('diario.bimestres.bimestres',[
             'turma' => $turma,
             'disciplina' => $disciplina,
             'periodos' => $periodos,
@@ -87,11 +91,4 @@ class NotaTipoController extends Controller
             'diarioFinalizado' =>$diarioFinalizado,
         ]);
     }
-    public function teste($resuest, $model = null){
-        echo "<pre>";
-        print_r($resuest);
-        print_r($model);
-        exit;
-    }
-
 }

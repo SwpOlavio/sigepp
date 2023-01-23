@@ -5,24 +5,23 @@ namespace App\Models\Diario;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MediaAnual extends Model
+class Falta extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'b1',
-        'b2',
-        'b3',
-        'b4',
-        'media',
-        'recuperacao',
-        'conselho',
+        'anoletivo_id',
+        'periodo_id',
+        'conteudo_id',
+        'escola_id',
         'turma_id',
         'disciplina_id',
-        'aluno_id',
         'professor_id',
-        'status',
-        'escola_id',
-        'anoletivo_id',
-        'status_sigla'
+        'aluno_id',
+        'aluno_numero',
+        'falta1',
+        'falta2',
+        'falta3',
+        'falta4',
+        'falta5'
     ];
 }

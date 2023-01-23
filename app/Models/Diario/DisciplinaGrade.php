@@ -5,18 +5,12 @@ namespace App\Models\Diario;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Nota extends Model
+class DisciplinaGrade extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nota',
-        'aluno_id',
-        'data_nota_id',
-        'turma_id',
+        'grade_id',
         'disciplina_id',
-        'professor_id',
-        'periodo_id',
-        'escola_id',
-        'anoletivo_id'
+        'escola_id'
     ];
 }

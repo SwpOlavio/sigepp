@@ -1,6 +1,6 @@
 <?php
 
-//use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\Web\WebController;
 //use App\Http\Controllers\Admin\LoginController;
 //use App\Http\Controllers\Admin\UserController;
@@ -22,7 +22,9 @@
 //use App\Http\Controllers\Admin\BibliotecaController;
 
 use App\Http\Controllers\Diario\DiarioController;
-//use App\Http\Controllers\Diario\ConteudoController;
+use App\Http\Controllers\Diario\DTurmaProfessorController;
+use App\Http\Controllers\Diario\ConteudoController;
+use \App\Http\Controllers\Diario\BimestreController;
 //use App\Http\Controllers\Diario\ConteudoCampoController;
 //use App\Http\Controllers\Diario\NotaTipoController;
 //use App\Http\Controllers\Diario\NotaController;
@@ -54,7 +56,7 @@ use App\Http\Controllers\Diario\DiarioController;
 //Route::get('/blog/{uri}', [WebController::class,'article'])->name("article");
 //Route::get('/contato', [WebController::class,'contact'])->name("contact");
 
-//Route::group(['namespace'=>'Admin', 'prefix'=>'admin', 'as'=>'admin.'], function (){
+Route::group(['namespace'=>'Admin', 'prefix'=>'admin', 'as'=>'admin.'], function (){
 //
 //    Route:Route::get('/home', [LoginController::class, "home"])->name('home');
 //
@@ -183,38 +185,38 @@ use App\Http\Controllers\Diario\DiarioController;
 //    Route::get('/login',  [LoginController::class,'showLogin'])->name("showLogin");
 //    Route::post('/autenticar', [LoginController::class,'auth'])->name("login.do");
 //    Route::get('/logout', [LoginController::class,'logout'])->name("logout");
-//});
+});
 
 Route::group(['namespace'=>'Diario', 'prefix'=>'diario', 'as'=>'diario.'], function (){
 
     /** Rotas protegidas */
    // Route::middleware(['auth'])->group(function (){
         /** Dashboard home professor */
-        Route::get('/home', [DiarioController::class, "home"])->name('home');
+        Route::get('/', [DiarioController::class, "index"])->name('index');
+        Route::get('/turma', [DTurmaProfessorController::class, "index"])->name('turma.index');
         /*
         Route::post('/escola/listaAnoleFuncoes', [DiarioController::class, "listaAnoleFuncoes"])->name('anoletivo.funcoes.listar');
         Route::post('/escola/ativarEscola', [DiarioController::class, "ativarEscola"])->name('escola.ativar');
-        Route::get('/conteudo/turma/{turma}/disciplina/{disciplina}', [DiarioController::class, "conteudo"])->name('conteudo');
+
         /** Conteudo */
-    /*
-        Route::post('/conteudo/turma/{turma}/disciplina/{disciplina}/vermais', [DiarioController::class, "vermais"])->name('conteudo.vermais');
-        Route::post('/conteudo/cadastrar/{turma}/{disciplina}', [ConteudoController::class, "cadastrar"])->name('conteudo.cadastrar');
-        Route::get('/conteudo/listar/{id}', [ConteudoController::class, "listar"])->name('conteudo.listar');
-        Route::get('/conteudo/destroy/{id}', [ConteudoController::class, "destroy"])->name('conteudo.destroy');
-        Route::get('/conteudo/turma/{turma}/disciplina/{disciplina}/copiarConteudo', [ConteudoController::class, "copiarConteudo"])->name('conteudo.copiarConteudo');
-        Route::get('/conteudo/turma/{turma}/disciplina/{disciplina}/copiarHabilidades', [ConteudoController::class, "copiarHabilidades"])->name('conteudo.copiarHabilidades');
-*/
+        Route::get('/conteudo/{conteudo}/turma/{turma}/disciplina/{disciplina}/faltas',[ConteudoController::class,'faltas'])->name('conteudo.turma.disciplina.faltas');
+        Route::post('/conteudo/faltas/salvar',[ConteudoController::class,'salvarFaltas'])->name('conteudo.faltas.salvarFaltas');
+        Route::get('/conteudo/turma/{turma}/disciplina/{disciplina}',[ConteudoController::class,'conteudo'])->name('conteudo.turma.disciplina');
+        Route::get('/conteudo/turma/{turma}/disciplina/{disciplina}/ultimoConteudo',[ConteudoController::class,'ultimoConteudo'])->name('conteudo.turma.ultimoConteudo');
+        Route::post('/conteudo/listar', [ConteudoController::class,'listar'])->name('conteudo.listar');
+        Route::get('/conteudo/{id}/deletar', [ConteudoController::class,'destroy'])->name('conteudo.destroy');
+        Route::resource('/conteudo', '\App\Http\Controllers\Diario\ConteudoController')->except('destroy');
         /** Conteudo */
-    /**
-        Route::post('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/vermais', [DiarioController::class, "vermais"])->name('conteudo.vermais');
-        Route::post('/conteudoCampo/cadastrar/{turma}/{disciplina}', [ConteudoCampoController::class, "cadastrar"])->name('conteudo.campo.cadastrar');
-        Route::get('/conteudoCampo/listar/{id}', [ConteudoCampoController::class, "listar"])->name('conteudo.listar');
-        Route::get('/conteudoCampo/destroy/{id}', [ConteudoCampoController::class, "destroy"])->name('conteudo.destroy');
-        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarConteudo', [ConteudoCampoController::class, "copiarConteudo"])->name('conteudo.copiarConteudo');
-        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarHabilidades', [ConteudoCampoController::class, "copiarHabilidades"])->name('conteudo.copiarHabilidades');
-*/
+
+//        Route::post('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/vermais', [DiarioController::class, "vermais"])->name('conteudo.vermais');
+//        Route::post('/conteudoCampo/cadastrar/{turma}/{disciplina}', [ConteudoCampoController::class, "cadastrar"])->name('conteudo.campo.cadastrar');
+//        Route::get('/conteudoCampo/listar/{id}', [ConteudoCampoController::class, "listar"])->name('conteudo.listar');
+//        Route::get('/conteudoCampo/destroy/{id}', [ConteudoCampoController::class, "destroy"])->name('conteudo.destroy');
+//        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarConteudo', [ConteudoCampoController::class, "copiarConteudo"])->name('conteudo.copiarConteudo');
+//        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarHabilidades', [ConteudoCampoController::class, "copiarHabilidades"])->name('conteudo.copiarHabilidades');
+
         /** Data das Notas */
-        //Route::get('/notatipo/turma/{turma}/disciplina/{disciplina}/listarNotas', [NotaTipoController::class, "listarNotas"])->name('notatipo.listarNotas');
+        Route::get('/bimestres/turma/{turma}/disciplina/{disciplina}/listar', [BimestreController::class, "listar"])->name('bimestres.turma.disciplina');
         /** Notas */
     /*
         Route::get('/nota/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}/listarCriar', [NotaController::class, "listarCriar"])->name('nota.criar.listar');
