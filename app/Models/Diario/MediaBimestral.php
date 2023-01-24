@@ -21,7 +21,6 @@ class MediaBimestral extends Model
         'nota3',
         'nota4',
         'recuperacao',
-        'recuperacao2',
         'media',
         'status',
         'status_sigla'

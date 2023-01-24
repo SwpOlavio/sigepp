@@ -9,6 +9,10 @@ class MediaAnual extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'turma_id',
+        'disciplina_id',
+        'professor_id',
+        'aluno_id',
         'b1',
         'b2',
         'b3',
@@ -16,13 +20,8 @@ class MediaAnual extends Model
         'media',
         'recuperacao',
         'conselho',
-        'turma_id',
-        'disciplina_id',
-        'aluno_id',
-        'professor_id',
-        'status',
+        'status_sigla',
         'escola_id',
-        'anoletivo_id',
-        'status_sigla'
+        'anoletivo_id'
     ];
 }

@@ -8,87 +8,109 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Disciplina;
 use App\Models\Admin\Turma;
 use App\Models\Admin\TurmaProfessor;
+use App\Models\Diario\Matricula;
+use App\Models\Diario\MediaBimestral;
 use App\Models\Diario\PeriodoTurma;
 use App\Models\Diario\TipoNota;
 
-
-
 class BimestreController extends Controller
 {
-
     public function listar(Turma $turma, Disciplina $disciplina)
     {
-        $periodos = Professor::where('turma_id',$turma->id)
-            ->where('disciplina_id',$disciplina->id)
-            ->where('escola_id',1)
-            ->where('anoletivo_id',1)
-            ->orderBy('ordem','asc')
+
+        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.aluno_nome','alunos.aluno_inep')
+            ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
+            ->where('matriculas.turma_id', 4)
+            ->where('matriculas.escola_id', 2)
+            ->where('matriculas.anoletivo_id', 2)
+            ->orderBy('numero')
             ->get();
 
-        $listaNotaTipos = [];
-        $statusBimestre = [];
-        $liberarBimestre = [];
-
-        $diarioFinalizado = false;
-
-        foreach ($periodos as $periodo){
-
-                $nota_tipos = TipoNota::where('turma_id',$turma->id)
-                    ->where('disciplina_id',$disciplina->id)
-                    ->where('periodo_id',$periodo->id)
-                    ->where('escola_id',1)
-                    ->where('anoletivo_id',1)
-                    ->orderBy('created_at','asc')
-                    ->get();
-
-                array_push($listaNotaTipos, $nota_tipos);
-
-                switch ($periodo->ordem){
-                    case 1:
-                        $statusBimestre[1] = $periodo->status;
-                        if ($periodo->status == 1){
-                            $liberarBimestre[2] = true; // libera o 2º bimestre
-                        }else{
-                            $liberarBimestre[2] = false; // não libera o 2º bimestre
-                        }
-                        break;
-                    case 2:
-                        $statusBimestre[2] = $periodo->status;
-                        if ($periodo->status == 1){
-                            $liberarBimestre[3] = true; // libera o 3º bimestre
-                        }else{
-                            $liberarBimestre[3] = false; // não libera o 3º bimestre
-                        }
-                        break;
-                    case 3:
-                        $statusBimestre[3] = $periodo->status;
-                        if ($periodo->status == 1){
-                            $liberarBimestre[4] = true; // libera o 4º bimestre
-                        }else{
-                            $liberarBimestre[4] = false; // não libera o 4º bimestre
-                        }
-                        break;
-                    case 4:
-                        $statusBimestre[4] = $periodo->status;
-                        break;
-                    case 6:
-
-                        if ($periodo->status == 1){
-                            $diarioFinalizado = true;
-                        }
-                        break;
-                }
-
+        $series = [];
+        $multisseriada = false;
+        if ($turma->atendimento === 'Multisseriada Infantil'){
+            $series = [10 => 'Infantil I',11 => 'Infantil II', 12 => 'Infantil III' ];
+            $multisseriada = true;
+        }else if ($turma->atendimento === 'Multisseriada Fundamental'){
+            $series = [1 => '1° Ano', 2 => '2º Ano', 3 => '3º Ano',4 => '4º Ano',5 => '5º Ano',6 => '6º Ano',7 => '7º Ano', 8 => '8º Ano',9 => '9º Ano'];
+            $multisseriada = true;
+        }else if ($turma->atendimento === 'Multisseriada Infantil e Fundamental'){
+            $series = [1 => '1° Ano', 2 => '2º Ano', 3 => '3º Ano',4 => '4º Ano',5 => '5º Ano',6 => '6º Ano',7 => '7º Ano', 8 => '8º Ano',9 => '9º Ano',10 => 'Infantil I',11 => 'Infantil II', 12 => 'Infantil III' ];
+            $multisseriada = true;
         }
 
+
+        $matriculas_lista = [];
+        foreach ($matriculas as $matricula){
+            $temp = (object)[
+                'id' => $matricula->id,
+                'aluno_id' => $matricula->aluno_id,
+                'numero' => $matricula->numero,
+                'nome' => $matricula->aluno_nome,
+                'serie' => $matricula->serie,
+                'inep' => $matricula->aluno_inep,
+                'data' => (new \DateTime($matricula->data))->format('d/m/Y'),
+                'status' => 'MTR',
+                'turno' => $turma->turno,
+                'falta' => $faltas->falta ?? 0
+            ];
+
+            $matriculas_lista[] = $temp;
+        }
+        // Listar os bimestres ------------------------------------------------------------------
+
+        $periodoPofessors = TurmaProfessor::select('periodo_turmas.id', 'periodo_turmas.ordem')
+            ->leftJoin('periodo_turmas','periodo_turmas.tpd','turma_professors.id')
+            ->where('turma_professors.turma_id', $turma->id)
+            ->where('turma_professors.disciplina_id', $disciplina->id)
+            ->where('turma_professors.professor_id', 12)
+            ->where('turma_professors.escola_id', 2)
+            ->where('turma_professors.anoletivo_id', 2)
+            ->get();
+        // 727 a 733
+
+
+        // Verifica se tem nota cadastrada (Trabaho, Prova, ...)
+        $tipoNotas = TipoNota::where('turma_id', $turma->id)
+            ->where('disciplina_id', $disciplina->id)
+            ->where('escola_id', 2)
+            ->where('anoletivo_id', 2)
+            ->where('professor_id', 2)
+            ->get();
+
+        //dd($tipoNotas);
+
+        $tipoNotas->each(function($item) use ($periodoPofessors) {
+            $item->data = (new \DateTime($item->data))->format('d/m/Y');
+            $item->periodos = $periodoPofessors;
+        });
+
+        $mediasBimestralais = MediaBimestral::where('turma_id', $turma->id)
+            ->where('disciplina_id', $disciplina->id)
+            ->where('escola_id', 2)
+            ->where('anoletivo_id', 2)
+            ->get();
+
+        $listaMediasSalvas = $periodoPofessors->map(function($item) use ($mediasBimestralais){
+            if ($item->ordem <= 4){
+                return ([
+                    'ordem' => $item->ordem,
+                    'salvo' => $mediasBimestralais->where('periodo_id', $item->id)->where('media', '>', 0)->count() > 0 ? 1: 0
+                ]);
+            }
+        });
+
+        //--------------------------------------------------------------------------------------------------------
         return view('diario.bimestres.bimestres',[
-            'turma' => $turma,
-            'disciplina' => $disciplina,
-            'periodos' => $periodos,
-            'listaNotaTipos' => $listaNotaTipos,
-            'statusBimestre' =>$statusBimestre,
-            'liberarBimestre' =>$liberarBimestre,
-            'diarioFinalizado' =>$diarioFinalizado,
-        ]);
+                'turma' => $turma,
+                'disciplina' => $disciplina,
+                'listaTipoNotas' => $tipoNotas,
+                'mediasSalvas' => $listaMediasSalvas,
+                'periodos' => $periodoPofessors,
+                'matriculas' => $matriculas_lista,
+                'series' => $series,
+                'multisseriada' => $multisseriada,
+            ]
+        );
     }
 }

@@ -25,6 +25,8 @@ use App\Http\Controllers\Diario\DiarioController;
 use App\Http\Controllers\Diario\DTurmaProfessorController;
 use App\Http\Controllers\Diario\ConteudoController;
 use \App\Http\Controllers\Diario\BimestreController;
+use \App\Http\Controllers\Diario\MediaAnualController;
+use \App\Http\Controllers\Diario\NotaController;
 //use App\Http\Controllers\Diario\ConteudoCampoController;
 //use App\Http\Controllers\Diario\NotaTipoController;
 //use App\Http\Controllers\Diario\NotaController;
@@ -215,9 +217,25 @@ Route::group(['namespace'=>'Diario', 'prefix'=>'diario', 'as'=>'diario.'], funct
 //        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarConteudo', [ConteudoCampoController::class, "copiarConteudo"])->name('conteudo.copiarConteudo');
 //        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarHabilidades', [ConteudoCampoController::class, "copiarHabilidades"])->name('conteudo.copiarHabilidades');
 
-        /** Data das Notas */
+        /** Bimestres */
         Route::get('/bimestres/turma/{turma}/disciplina/{disciplina}/listar', [BimestreController::class, "listar"])->name('bimestres.turma.disciplina');
+        Route::get('/bimestres/{tipoNota}/deletar', [BimestreController::class,'destroy'])->name('bimestres.destroy');
+        Route::resource('/bimestres', '\App\Http\Controllers\Diario\BimestreController')->except('destroy'); // vou tirar
+        /** Fim Bimestres */
+
         /** Notas */
+        Route::get('/nota/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}',[NotaController::class,'notas'])->name('notas.turma.disciplina.periodo');
+        Route::post('/nota/cadastrar', [NotaController::class, "cadastrar"])->name('nota.cadastrar');
+        /** Fim Notas */
+
+        /** Media Bimestral */
+        Route::get('/mediabim/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}',[MediaBimestralController::class,'medias'])->name('mediabim.turma.disciplina.periodo');
+        /** Fim Media Bimestral */
+
+        Route::get('/mediaanual/turma/{turma}/disciplina/{disciplina}',[MediaAnualController::class,'medias'])->name('mediaanual.turma.disciplina');
+        //Route::get('/mediaanual/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}/limpar',[MediaBimestralController::class,'limparMedia'])->name('mediaanual.limparMedia');
+        Route::post('/mediaanual/store',[MediaAnualController::class,'store'])->name('mediaanual.store'); // vou tirar
+
     /*
         Route::get('/nota/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}/listarCriar', [NotaController::class, "listarCriar"])->name('nota.criar.listar');
         Route::get('/nota/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}/listarMedia', [NotaController::class, "listarMedia"])->name('nota.media.listar');
