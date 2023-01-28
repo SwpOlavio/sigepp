@@ -19,4 +19,5 @@ class TipoNota extends Model
         'anoletivo_id'
     ];
     protected $periodos;
+    protected $notas = [];
 }

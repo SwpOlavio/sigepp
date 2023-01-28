@@ -10,6 +10,7 @@ use App\Models\Admin\Turma;
 use App\Models\Admin\TurmaProfessor;
 use App\Models\Diario\Matricula;
 use App\Models\Diario\MediaBimestral;
+use App\Models\Diario\Nota;
 use App\Models\Diario\PeriodoTurma;
 use App\Models\Diario\TipoNota;
 
@@ -52,11 +53,22 @@ class BimestreController extends Controller
                 'data' => (new \DateTime($matricula->data))->format('d/m/Y'),
                 'status' => 'MTR',
                 'turno' => $turma->turno,
-                'falta' => $faltas->falta ?? 0
+                'falta' => $faltas->falta ?? 0,
             ];
 
             $matriculas_lista[] = $temp;
         }
+
+//        foreach ($matriculas as $matricula){
+//            $notas = Nota::where('turma_id', $turma->id)
+//                ->where('disciplina_id', $disciplina->id)
+//                ->where('escola_id', 2)
+//                ->where('anoletivo_id', 2)
+//                ->where('professor_id', 12)
+//                ->where('aluno_id', $matricula->aluno_id)
+//                ->delete();
+//        }
+
         // Listar os bimestres ------------------------------------------------------------------
 
         $periodoPofessors = TurmaProfessor::select('periodo_turmas.id', 'periodo_turmas.ordem')
@@ -66,6 +78,7 @@ class BimestreController extends Controller
             ->where('turma_professors.professor_id', 12)
             ->where('turma_professors.escola_id', 2)
             ->where('turma_professors.anoletivo_id', 2)
+            ->orderBy('periodo_turmas.ordem', 'ASC')
             ->get();
         // 727 a 733
 
@@ -75,15 +88,76 @@ class BimestreController extends Controller
             ->where('disciplina_id', $disciplina->id)
             ->where('escola_id', 2)
             ->where('anoletivo_id', 2)
-            ->where('professor_id', 2)
+            ->where('professor_id', 12)
             ->get();
 
         //dd($tipoNotas);
 
-        $tipoNotas->each(function($item) use ($periodoPofessors) {
-            $item->data = (new \DateTime($item->data))->format('d/m/Y');
-            $item->periodos = $periodoPofessors;
-        });
+
+
+//        $tipoNotas->each(function($item) use ($periodoPofessors) {
+//            $item->data = (new \DateTime($item->data))->format('d/m/Y');
+//            $item->periodos = $periodoPofessors;
+//        });
+//        $listaNotas = [];
+//        foreach ($tipoNotas as $item){
+//            $lista = [
+//                'data' => (new \DateTime($item->data))->format('d/m/Y'),
+//                'periodos' => $periodoPofessors,
+//            ];
+//            $listaNotas[] = $lista;
+//        }
+        $notas = Nota::where('turma_id', $turma->id)
+            ->where('disciplina_id', $disciplina->id)
+            ->where('escola_id', 2)
+            ->where('anoletivo_id', 2)
+            ->where('professor_id', 12)
+            ->get();
+//
+
+        //$tipoNotasB1 = $tipoNotas->where('periodo_id', $periodo1->id);
+
+        $listaBimestre = [];
+        foreach ($periodoPofessors as $periodoPofessor){
+
+            $tipoNotas = $tipoNotas->where('periodo_id', $periodoPofessor->id);
+            foreach ($tipoNotas as $tipoNota){
+                $notasAlunos = $notas->where('tipo_nota_id', $tipoNota->id);
+                $listaBimestre[$periodoPofessor->ordem] = [
+                    'data' => (new \DateTime($tipoNota->data))->format('d/m/Y'),
+                    'tipoNota' => $tipoNota,
+                    'notasAlunos' => $notasAlunos,
+                ];
+            }
+        }
+
+        $bimestre1 = $listaBimestre[1] ?? null;
+        $bimestre2 = $listaBimestre[2] ?? null;
+        $bimestre3 = $listaBimestre[3] ?? null;
+        $bimestre4 = $listaBimestre[4] ?? null;
+
+        dd($bimestre1);
+
+
+//        foreach ($tipoNotasB1 as $tipoNota){
+//            $notasAlunos = $notas->where('periodo_id', $tipoNota->periodo_id)->where('tipo_nota_id', $tipoNota->id);
+//            $listaBimestre1[] = [
+//                'data' => (new \DateTime($tipoNota->data))->format('d/m/Y'),
+//                'tipoNota' => $tipoNota,
+//                'notasAlunos' => $notasAlunos,
+//            ];
+//        }
+
+
+
+        //$tipoNotas->notas = $listaNotas;
+
+//        $tipoNotas =  $tipoNotas->map(function($item){
+//            return {
+//                $nota = Nota::where('periodo_id', $item->id)->where('tipo_nota_id', $item->id)->first();
+//            }
+//        }
+
 
         $mediasBimestralais = MediaBimestral::where('turma_id', $turma->id)
             ->where('disciplina_id', $disciplina->id)

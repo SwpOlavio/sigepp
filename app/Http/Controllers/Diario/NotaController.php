@@ -451,9 +451,24 @@ class NotaController extends Controller
     public function cadastrar(Request $request){
 
             $tipoNota = new TipoNota();
-            $notaTipo = $this->popular_tipo_nota($request, $tipoNota);
+            //$notaTipo = 90043;//$this->popular_tipo_nota($request, $tipoNota);
+            $notaTipo = TipoNota::find(90043);
+
             if ($notaTipo->id > 0){
-                //$this->popular_notas($request, $notaTipo);
+                $notas = json_decode($request->input('notas'));
+                foreach ($notas as $resultado){
+                    $nota = new Nota();
+                    $nota->nota = $resultado->nota;
+                    $nota->aluno_id = $resultado->alunoId;
+                    $nota->tipo_nota_id = $notaTipo->id;
+                    $nota->professor_id = 12;
+                    $nota->periodo_id = $request->periodo_id;
+                    $nota->turma_id = $request->turma_id;
+                    $nota->disciplina_id = $request->disciplina_id;
+                    $nota->escola_id = 2;
+                    $nota->anoletivo_id = 2;
+                    $nota->save();
+                }
                 $msg = $this->message->success(title:'Parabéns', message:'Notas cadastrada com sucesso.');
                 return response()->json($msg);
             }
@@ -497,32 +512,6 @@ class NotaController extends Controller
 
 
         return $notaTipo;
-    }
-    public function popular_notas(Request $request, TipoNota $notaTipo){
-
-        $notas = $request->input('notas');
-        if ($request->acao == 'editar') {
-            foreach ($notas as $nota_id => $nota){
-                $nova_nota = Nota::find($nota_id);
-                $nova_nota->nota = $nota;
-                $nova_nota->save();
-            }
-
-        }else {
-            foreach ($notas as $aluno_id => $nota){
-                $nova_nota = new Nota();
-                $nova_nota->nota = $nota;
-                $nova_nota->nota_tipo_id = $notaTipo->id;
-                $nova_nota->periodo_id = $request->periodo_id;
-                $nova_nota->funcionario_id = 18;
-                $nova_nota->aluno_id = $aluno_id;
-                $nova_nota->turma_id = $request->turma_id;
-                $nova_nota->disciplina_id = $request->disciplina_id;
-                $nova_nota->escola_id = 2;
-                $nova_nota->anoletivo_id = 2;
-                $nova_nota->save();
-            }
-        }
     }
 
     public function editar(Request $request, Turma $turma, Disciplina $disciplina, int $periodo_id, int $notatipo){

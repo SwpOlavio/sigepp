@@ -46,10 +46,14 @@ var Nota = (function () {
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
                 let dado = {
                     alunoId: Number(input.dataset.aluno_id),
+                    nota_id: Number(input.dataset.nota_id),
                     nota: Number(input.value),
+
                 }
                 dadosInput.push(dado)
             });
+
+            console.log(dadosInput)
 
             formData.set("notas",JSON.stringify(dadosInput))
             formData.set("periodo_id",periodoAtual)

@@ -304,8 +304,8 @@
                                             </div>
                                             <!--end::Section-->
                                         </div>
-                                    @endif
-                                @endforeach</div>
+                                     @endif
+                                    @endforeach</div>
                                 <div>
                                 <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
                                 <div class="separator separator-dashed separator-content  mt-12 mb-5">
