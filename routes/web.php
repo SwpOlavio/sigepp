@@ -226,6 +226,7 @@ Route::group(['namespace'=>'Diario', 'prefix'=>'diario', 'as'=>'diario.'], funct
         /** Notas */
         Route::get('/nota/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}',[NotaController::class,'notas'])->name('notas.turma.disciplina.periodo');
         Route::post('/nota/cadastrar', [NotaController::class, "cadastrar"])->name('nota.cadastrar');
+        Route::post('/nota/atualizar', [NotaController::class, "atualizar"])->name('nota.atualizar');
         /** Fim Notas */
 
         /** Media Bimestral */

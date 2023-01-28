@@ -1,14 +1,16 @@
 "use strict";
-var TabelaTurmaDisciplina = (function () {
+var Nota = (function () {
     var t,
         f,
-        a,
+        btnSalvar,
         e,
         v,
         n,
+        form,
+        periodoAtual,
         submit = () => {
         v = false;
-            t.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+            form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
                 if (input.value > 10){
                     toastr.options = {
                         "preventDuplicates": true,
@@ -20,15 +22,76 @@ var TabelaTurmaDisciplina = (function () {
             if (!v){
                 n.validate().then(function (e) {
                     if ("Valid" == e){
-                        a.setAttribute("data-kt-indicator", "on")
-                        a.disabled = !0
-                        f.submit()
+                        btnSalvar.setAttribute("data-kt-indicator", "on")
+                        btnSalvar.disabled = !0
+                        cadastrarNotas()
+                        //form.submit()
                     }
                 })
             }
         },
+        cadastrarNotas = () => {
+
+            let turma_id = document.querySelector('[name=turma_id]').value
+
+            let disciplina_id = document.querySelector('[name=disciplina_id]').value
+            let data_nota = document.querySelector('[name=data_nota]').value
+            let data_nota_formatada = data_nota.split('/').reverse().join('-')
+            let tipo_nota = $('#tipo_nota').val()
+
+            let tipo_nota_id = document.querySelector('#tipo_nota_id').value
+
+            let formData = new FormData()
+            let dadosInput = []
+            form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+                let dado = {
+                    alunoId: Number(input.dataset.aluno_id),
+                    nota: Number(input.value),
+                }
+                dadosInput.push(dado)
+            });
+
+            formData.set("notas",JSON.stringify(dadosInput))
+            formData.set("periodo_id",periodoAtual)
+
+            formData.set("turma_id",turma_id)
+            formData.set("disciplina_id",disciplina_id)
+
+            formData.set("tipo_nota_id",tipo_nota_id)
+            formData.set("data_nota",data_nota_formatada)
+            formData.set("tipo_nota",tipo_nota)
+
+
+
+            fetch(BaseUrl + "/diario/nota/cadastrar",{
+                method: 'POST',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': document.getElementsByClassName('csrf-token')[0].content
+                },
+                body: formData
+            }).then(response => response.json()).then(data => {
+                //document.querySelector('#pedido_id').value = data.pedidoId
+                btnSalvar.removeAttribute("data-kt-indicator");
+                btnSalvar.disabled = !1
+                Swal.fire({
+                    text: "Notas salvas com sucesso",
+                    icon: "success",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok, Entendi!",
+                    customClass: {
+                        confirmButton: "btn btn-primary"
+                    }
+                }).then(function (){
+                    form.reset()
+                })
+
+            }).catch(error => {
+                console.log(error)
+            })
+        },
         validarNota = () => {
-            t.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+            form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
 
                     let im = new Inputmask({ mask: ["9", "9.9", "99.9"],  numericInput: true})
                     im.mask(input);
@@ -53,41 +116,55 @@ var TabelaTurmaDisciplina = (function () {
 
                 });
             });
+
+
         };
+
+    var optionFormat = function(item) {
+        if ( !item.id ) {return item.text;}
+        var span = document.createElement('span');
+        var template = '';
+        template += "<span class='fs-5 text-gray-800'>"+item.text+"</span>";
+        span.innerHTML = template
+        return $(span);
+    }
+    $("#tipo_nota").select2({
+        templateSelection: optionFormat,
+        templateResult: optionFormat
+    });
+
+
+
+
     return {
         init: function () {
-            f = document.querySelector("#formulario");
-            $("#data_nota").flatpickr({ enableTime: !1, dateFormat: "d/m/Y" }),
-            a = document.querySelector("#btn_salvar_notas");
-            a.addEventListener('click', function (e){
+            let modalNota = document.querySelector('#kt_modal_nota')
+            let modal = new bootstrap.Modal(modalNota)
+            form = document.querySelector("#formulario-notas")
+            $("#data_nota").flatpickr({ enableTime: !1, dateFormat: "d/m/Y" })
+            btnSalvar = document.querySelector("#btn_salvar_notas");
+            btnSalvar.addEventListener('click', function (e){
                 submit();
             });
-            (n = FormValidation.formValidation(f, {
+            (n = FormValidation.formValidation(form, {
                 fields: {
-                    data: { validators: { notEmpty: { message: "A data é obrigatória" } } },
-                    tipo: { validators: { notEmpty: { message: "O tipo de avaliação é obrigatório" } } },
+                    data: { validators: { notEmpty: { message: "Obrigatório" } } },
+                    tipo: { validators: { notEmpty: { message: "Obrigatório" } } },
                 },
                 plugins: { trigger: new FormValidation.plugins.Trigger(), bootstrap: new FormValidation.plugins.Bootstrap5({ rowSelector: ".fv-row", eleInvalidClass: "", eleValidClass: "" }) },
-            })),
-            (t = document.querySelector("#kt_nota_table")) &&
-            ((e = $(t).DataTable({
-                info: !1,
-                order: [],
-                    paging: false,
-                pageLength: 10,
-                columnDefs: [
-                ]
-            })),
-                validarNota()
-
-            );
+            }))
+            $(form.querySelector("[name='nota']")).on('change', function (){
+                n.revalidateField('tipo')
+            })
+            validarNota()
         },
-        tabela: function (){
-            return tabela()
+        getPeriodo: function (periodo){
+            document.querySelector('#periodo').value = periodo
+            periodoAtual = periodo
         }
     };
 })();
 KTUtil.onDOMContentLoaded(function () {
-    TabelaTurmaDisciplina.init();
+    Nota.init();
 
 });

@@ -3,18 +3,16 @@
 namespace App\Http\Controllers\Diario;
 
 use App\Http\Controllers\Controller;
-use App\Models\Aluno;
-use App\Models\Disciplina;
-use App\Models\MediaAnual;
-use App\Models\MediaBimestral;
-use App\Models\Nota;
-use App\Models\NotaTipo;
-use App\Models\PeriodoTurma;
-use App\Models\SchoolsYears;
-use App\Models\Turma;
+use App\Models\Admin\Disciplina;
+use App\Models\Admin\Turma;
+use App\Models\Diario\Escola;
+use App\Models\Diario\MediaAnual;
+use App\Models\Diario\MediaBimestral;
+use App\Models\Diario\Nota;
+use App\Models\Diario\PeriodoTurma;
+use App\Models\Diario\TipoNota;
 use App\Models\TurmaAluno;
 use Illuminate\Http\Request;
-use function React\Promise\all;
 
 class NotaController extends Controller
 {
@@ -30,7 +28,7 @@ class NotaController extends Controller
     }
     public function listarEditar(Turma $turma, Disciplina $disciplina, int $periodo, int $notatipo){
 
-        $notaTipo = NotaTipo::find($notatipo);
+        $notaTipo = TipoNota::find($notatipo);
 
         $alunosNotas = Nota::join('alunos','alunos.id','=','notas.aluno_id')
             ->join('turma_alunos','notas.aluno_id','=','turma_alunos.aluno_id')
@@ -53,7 +51,7 @@ class NotaController extends Controller
             ->where('anoletivo_id',1)
             ->first();
 
-        $notaTipos = NotaTipo::where('turma_id',$turma->id)
+        $notaTipos = TipoNota::where('turma_id',$turma->id)
 
             ->where('disciplina_id',$disciplina->id)
             ->where('periodo_id',$periodoTurmas->id)
@@ -169,7 +167,7 @@ class NotaController extends Controller
             ->orderBy('turma_alunos.numero','asc')
             ->get();
 
-        $mediaEscolar = SchoolsYears::where('school_id',1)->where('year',2021)->first()->school_average;
+        $mediaEscolar = Escola::where('school_id',1)->where('year',2021)->first()->school_average;
 
 
         $listaMediaAlunos = [];
@@ -450,48 +448,57 @@ class NotaController extends Controller
         print_r($model);
         exit;
     }
-    public function cadastrar(Request $request, Turma $turma, Disciplina $disciplina, int $periodo_id){
+    public function cadastrar(Request $request){
 
-
-            $periodo = PeriodoTurma::where('turma_id',$turma->id)
-                ->where('disciplina_id',$disciplina->id)
-                ->where('ordem',$periodo_id)
-                ->where('escola_id',1)
-                ->where('anoletivo_id',1)
-                ->first();
-
-            $nota_tipo = new NotaTipo();
-            $notaTipo = $this->popular_nota_tipo($request, $nota_tipo, $turma, $disciplina, $periodo);
+            $tipoNota = new TipoNota();
+            $notaTipo = $this->popular_tipo_nota($request, $tipoNota);
             if ($notaTipo->id > 0){
-                $this->popular_notas($request, $notaTipo, $turma, $disciplina, $periodo);
+                //$this->popular_notas($request, $notaTipo);
                 $msg = $this->message->success(title:'Parabéns', message:'Notas cadastrada com sucesso.');
-                return redirect()->route('diario.notatipo.listarNotas',['turma'=>$turma,'disciplina' => $disciplina])->with('status',$msg);
+                return response()->json($msg);
             }
+            $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
+            return response()->json($msg);
+    }
+    public function atualizar(Request $request){
 
+        $tipoNota = TipoNota::find($request->tipo_nota_id);
+        $notaTipo = $this->popular_tipo_nota($request, $tipoNota);
+        if ($notaTipo->id > 0){
+           // $this->popular_notas($request, $notaTipo);
+            $msg = $this->message->success(title:'Parabéns', message:'Notas atualizadas com sucesso.');
+            return response()->json($msg);
+        }
         $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
-        return redirect()->route('diario.notatipo.listarNotas',['turma'=>$turma,'disciplina' => $disciplina])->with('status',$msg);
+        return response()->json($msg);
 
     }
-    public function popular_nota_tipo(Request $request, NotaTipo $notaTipo, Turma $turma, Disciplina $disciplina, PeriodoTurma $periodoTurma){
-        if ($request->acao == 'editar'){
-            $notaTipo->data = $request->data;
-            $notaTipo->tipo = $request->tipo;
+
+    public function popular_tipo_nota(Request $request, TipoNota $notaTipo){
+
+        if ($notaTipo->id > 0){
+            $notaTipo->data = $request->data_nota;
+            $notaTipo->tipo = $request->tipo_nota;
             $notaTipo->save();
         }else{
-            $notaTipo->data = $request->data;
-            $notaTipo->tipo = $request->tipo;
-            $notaTipo->escola_id = 1;
-            $notaTipo->periodo_id = $periodoTurma->id;
-            $notaTipo->turma_id = $turma->id;
-            $notaTipo->disciplina_id = $disciplina->id;
-            $notaTipo->anoletivo_id = 1;
+            $notaTipo->data = $request->data_nota;
+            $notaTipo->tipo = $request->tipo_nota;
+
+            $notaTipo->periodo_id = $request->periodo_id;
+            $notaTipo->turma_id = $request->turma_id;
+            $notaTipo->disciplina_id = $request->disciplina_id;
+
+            $notaTipo->professor_id = 12;
+
+            $notaTipo->escola_id = 2;
+            $notaTipo->anoletivo_id = 2;
             $notaTipo->save();
         }
 
 
         return $notaTipo;
     }
-    public function popular_notas(Request $request, NotaTipo $notaTipo, Turma $turma, Disciplina $disciplina, PeriodoTurma $periodoTurma){
+    public function popular_notas(Request $request, TipoNota $notaTipo){
 
         $notas = $request->input('notas');
         if ($request->acao == 'editar') {
@@ -506,13 +513,13 @@ class NotaController extends Controller
                 $nova_nota = new Nota();
                 $nova_nota->nota = $nota;
                 $nova_nota->nota_tipo_id = $notaTipo->id;
-                $nova_nota->periodo_id = $periodoTurma->id;
+                $nova_nota->periodo_id = $request->periodo_id;
                 $nova_nota->funcionario_id = 18;
                 $nova_nota->aluno_id = $aluno_id;
-                $nova_nota->turma_id = $turma->id;
-                $nova_nota->disciplina_id = $disciplina->id;
-                $nova_nota->escola_id = 1;
-                $nova_nota->anoletivo_id = 1;
+                $nova_nota->turma_id = $request->turma_id;
+                $nova_nota->disciplina_id = $request->disciplina_id;
+                $nova_nota->escola_id = 2;
+                $nova_nota->anoletivo_id = 2;
                 $nova_nota->save();
             }
         }
