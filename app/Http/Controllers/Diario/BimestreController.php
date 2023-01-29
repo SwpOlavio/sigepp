@@ -117,13 +117,12 @@ class BimestreController extends Controller
 
         //$tipoNotasB1 = $tipoNotas->where('periodo_id', $periodo1->id);
 
-        $listaBimestre = [];
+        $listaBimestres = [];
         foreach ($periodoPofessors as $periodoPofessor){
-
             $tipoNotas = $tipoNotas->where('periodo_id', $periodoPofessor->id);
             foreach ($tipoNotas as $tipoNota){
                 $notasAlunos = $notas->where('tipo_nota_id', $tipoNota->id);
-                $listaBimestre[$periodoPofessor->ordem] = [
+                $listaBimestres[$periodoPofessor->ordem] = (object)[
                     'data' => (new \DateTime($tipoNota->data))->format('d/m/Y'),
                     'tipoNota' => $tipoNota,
                     'notasAlunos' => $notasAlunos,
@@ -131,12 +130,13 @@ class BimestreController extends Controller
             }
         }
 
-        $bimestre1 = $listaBimestre[1] ?? null;
-        $bimestre2 = $listaBimestre[2] ?? null;
-        $bimestre3 = $listaBimestre[3] ?? null;
-        $bimestre4 = $listaBimestre[4] ?? null;
+//        foreach ($listaBimestres as $listaBimestre){
+//            dump($listaBimestre->tipoNota->tipo);
+//        }
+//
+//        dd('');
+        //dd($listaBimestres);
 
-        dd($bimestre1);
 
 
 //        foreach ($tipoNotasB1 as $tipoNota){
@@ -147,8 +147,6 @@ class BimestreController extends Controller
 //                'notasAlunos' => $notasAlunos,
 //            ];
 //        }
-
-
 
         //$tipoNotas->notas = $listaNotas;
 
@@ -178,7 +176,7 @@ class BimestreController extends Controller
         return view('diario.bimestres.bimestres',[
                 'turma' => $turma,
                 'disciplina' => $disciplina,
-                'listaTipoNotas' => $tipoNotas,
+                'listaBimestres' => $listaBimestres,
                 'mediasSalvas' => $listaMediasSalvas,
                 'periodos' => $periodoPofessors,
                 'matriculas' => $matriculas_lista,

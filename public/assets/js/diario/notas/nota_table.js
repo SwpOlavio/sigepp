@@ -7,7 +7,10 @@ var Nota = (function () {
         v,
         n,
         form,
+        tipoNotaInput,
+        dataInput,
         periodoAtual,
+        bimestreNotas,
         submit = () => {
         v = false;
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
@@ -94,30 +97,34 @@ var Nota = (function () {
                 console.log(error)
             })
         },
+        listarNotas = () => {
+            tipoNotaInput.val(bimestreNotas.tipoNota.tipo).trigger('change')
+            dataInput.setDate(bimestreNotas.tipoNota.data)
+            console.log(bimestreNotas.tipoNota.tipo)
+            form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+                for (let notas in bimestreNotas){
+                    //console.log(notas)
+                }
+            })
+        },
         validarNota = () => {
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
 
                     let im = new Inputmask({ mask: ["9", "9.9", "99.9"],  numericInput: true})
                     im.mask(input);
-
                     input.addEventListener('keyup', function (e){
-
                         if (input.value >10){
                             input.classList.add("bg-light-danger");
                             input.classList.add("text-danger");
-
                             toastr.options = {
                                 "preventDuplicates": true,
                             }
                             toastr.error("A nota máxima deve ser 10.0", "Erro" );
-
                         }else{
                             input.classList.remove("bg-light-danger");
                             input.classList.remove("text-danger");
-                           toastr.clear()
-
+                            toastr.clear()
                         }
-
                 });
             });
 
@@ -132,12 +139,10 @@ var Nota = (function () {
         span.innerHTML = template
         return $(span);
     }
-    $("#tipo_nota").select2({
+    tipoNotaInput = $("#tipo_nota").select2({
         templateSelection: optionFormat,
         templateResult: optionFormat
     });
-
-
 
 
     return {
@@ -145,7 +150,9 @@ var Nota = (function () {
             let modalNota = document.querySelector('#kt_modal_nota')
             let modal = new bootstrap.Modal(modalNota)
             form = document.querySelector("#formulario-notas")
-            $("#data_nota").flatpickr({ enableTime: !1, dateFormat: "d/m/Y" })
+
+            dataInput = $("#data_nota").flatpickr({ enableTime: !1, dateFormat: "d/m/Y" })
+
             btnSalvar = document.querySelector("#btn_salvar_notas");
             btnSalvar.addEventListener('click', function (e){
                 submit();
@@ -165,6 +172,11 @@ var Nota = (function () {
         getPeriodo: function (periodo){
             document.querySelector('#periodo').value = periodo
             periodoAtual = periodo
+        },
+        getNotas: function (notas){
+            bimestreNotas = notas
+            listarNotas()
+            console.log(notas)
         }
     };
 })();

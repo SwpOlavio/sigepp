@@ -1536,7 +1536,7 @@
                                                 <!--end:Col-->
                                                 <!--begin:Col-->
                                                 <div class="col-lg-5 pe-lg-5">
-                                                    <img src="{{asset('/stock/600x600/img-84.jpg')}}" class="rounded mw-100" alt="" />
+                                                    <img src="{{asset('assets/media/stock/600x600/img-84.jpg')}}" class="rounded mw-100" alt="" />
                                                 </div>
                                                 <!--end:Col-->
                                             </div>
@@ -3124,7 +3124,7 @@
                                             <!--begin::Symbol-->
                                             <div class="symbol symbol-40px me-4">
 																	<span class="symbol-label bg-light">
-																		<img class="w-20px h-20px" src="{{asset('assets/media/svg/brand-logos/volicity-9.svg')}}')}}" alt="" />
+																		<img class="w-20px h-20px" src="{{asset('assets/media/svg/brand-logos/volicity-9.svg')}}" alt="" />
 																	</span>
                                             </div>
                                             <!--end::Symbol-->
@@ -4597,7 +4597,7 @@
                                 <div class="menu-item px-3">
                                     <a href="../../demo4/dist/account/settings.html" class="menu-link d-flex px-5">
 														<span class="symbol symbol-20px me-4">
-															<img class="rounded-1" src="{{asset('asset/media/flags/spain.svg')}}" alt="" />
+															<img class="rounded-1" src="{{asset('assets/media/flags/spain.svg')}}" alt="" />
 														</span>Spanish</a>
                                 </div>
                                 <!--end::Menu item-->
