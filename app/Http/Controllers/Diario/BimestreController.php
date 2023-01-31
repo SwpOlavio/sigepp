@@ -89,9 +89,9 @@ class BimestreController extends Controller
             ->where('escola_id', 2)
             ->where('anoletivo_id', 2)
             ->where('professor_id', 12)
+            ->select('id', 'data', 'tipo', 'periodo_id')
             ->get();
 
-        //dd($tipoNotas);
 
 
 
@@ -112,49 +112,50 @@ class BimestreController extends Controller
             ->where('escola_id', 2)
             ->where('anoletivo_id', 2)
             ->where('professor_id', 12)
+            //->select('id','nota', 'tipo_nota_id','aluno_id')
+            ->orderBy('id', 'ASC')
             ->get();
-//
 
-        //$tipoNotasB1 = $tipoNotas->where('periodo_id', $periodo1->id);
+        //dump($notas->where('periodo_id', 734));
 
+        //$tipoNotas = $tipoNotas->where('periodo_id', 734);
+
+        $listaAlunos = [];
         $listaBimestres = [];
+        $lista = [];
+        $index=0;
+
         foreach ($periodoPofessors as $periodoPofessor){
             $tipoNotas = $tipoNotas->where('periodo_id', $periodoPofessor->id);
-            foreach ($tipoNotas as $tipoNota){
+
+            foreach ($tipoNotas as $tipoNota) {
+                $lista = [];
                 $notasAlunos = $notas->where('tipo_nota_id', $tipoNota->id);
-                $listaBimestres[$periodoPofessor->ordem] = (object)[
-                    'data' => (new \DateTime($tipoNota->data))->format('d/m/Y'),
-                    'tipoNota' => $tipoNota,
-                    'notasAlunos' => $notasAlunos,
-                ];
+                if (!empty($notasAlunos)) {
+                    foreach ($notasAlunos as $nota) {
+                        $lista[] = $nota;
+                    }
+                    $listaAlunos = $lista;
+                }
+                $listaBimestres[$periodoPofessor->ordem][] =
+                    (object)[
+                        'periodo_id'=> $periodoPofessor->id,
+                        'data' => (new \DateTime($tipoNota->data))->format('d/m/Y'),
+                        'tipo' => $tipoNota->tipo,
+                        'tipo_nota_id' => $tipoNota->id,
+                        'notasAlunos' => $listaAlunos
+
+                    ];
             }
+
         }
 
-//        foreach ($listaBimestres as $listaBimestre){
-//            dump($listaBimestre->tipoNota->tipo);
-//        }
-//
-//        dd('');
-        //dd($listaBimestres);
+        //dd($listaBimestres[1]);
 
-
-
-//        foreach ($tipoNotasB1 as $tipoNota){
-//            $notasAlunos = $notas->where('periodo_id', $tipoNota->periodo_id)->where('tipo_nota_id', $tipoNota->id);
-//            $listaBimestre1[] = [
-//                'data' => (new \DateTime($tipoNota->data))->format('d/m/Y'),
-//                'tipoNota' => $tipoNota,
-//                'notasAlunos' => $notasAlunos,
-//            ];
-//        }
-
-        //$tipoNotas->notas = $listaNotas;
-
-//        $tipoNotas =  $tipoNotas->map(function($item){
-//            return {
-//                $nota = Nota::where('periodo_id', $item->id)->where('tipo_nota_id', $item->id)->first();
-//            }
-//        }
+        $bimestre1 = $listaBimestres[1] ?? null;
+        $bimestre2 = $listaBimestres[2] ?? null;
+        $bimestre3 = $listaBimestres[3] ?? null;
+        $bimestre4 = $listaBimestres[4] ?? null;
 
 
         $mediasBimestralais = MediaBimestral::where('turma_id', $turma->id)
@@ -176,7 +177,10 @@ class BimestreController extends Controller
         return view('diario.bimestres.bimestres',[
                 'turma' => $turma,
                 'disciplina' => $disciplina,
-                'listaBimestres' => $listaBimestres,
+                'bimestre1' => $bimestre1,
+                'bimestre2' => $bimestre2,
+                'bimestre3' => $bimestre3,
+                'bimestre4' => $bimestre4,
                 'mediasSalvas' => $listaMediasSalvas,
                 'periodos' => $periodoPofessors,
                 'matriculas' => $matriculas_lista,

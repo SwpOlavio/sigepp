@@ -229,11 +229,6 @@
 
             </div>
             <!--end::Informações-->
-            <input type="text" name="turma_id"  value="{{$turma->id}}"/>
-            <input type="text" name="disciplina_id"  value="{{$disciplina->id}}"/>
-            <input type="text" class="link-primary fw-bold" id="periodo"/>
-            <input type="text" class="link-primary fw-bold" id="tipo_nota_id" value="0"/>
-            <input type="hidden" id="medias_salvas"  value="{{$mediasSalvas ? $mediasSalvas : 0}}"/>
             <!--end::Informações-->
             <form action="{{route('diario.conteudo.faltas.salvarFaltas')}}" id="formulario" method="post">
                 @csrf
@@ -270,41 +265,44 @@
                             <!--begin::Body-->
                             <div class="d-flex flex-column card-body justify-content-between pt-5">
                                 <!--begin::Item-->
-                                <div>@foreach($listaBimestres as $ordem => $listaBimestre)
-                                    @if ($ordem === 1)
-                                        <div class="d-flex align-items-sm-center mb-7 item">
-                                            <!--begin::Symbol-->
-                                            <div class="symbol symbol-50px me-5">
+                                    <div id="b1">
+                                        @if(!empty($bimestre1))
+                                        @foreach($bimestre1 as $bimestre)
+                                                <div class="d-flex align-items-sm-center mb-7 item ">
+                                                    <!--begin::Symbol-->
+                                                    <div class="symbol symbol-50px me-5">
 													<span class="symbol-label bg-light-primary">
-														<!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
+
 														<span class="svg-icon svg-icon-primary svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="currentColor"/>
                                                         <path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="currentColor"/>
                                                         </svg>
                                                         </span>
-                                                        <!--end::Svg Icon-->
+
 													</span>
-                                            </div>
-                                            <!--end::Symbol-->
-                                            <!--begin::Section-->
-                                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                                <div class="flex-grow-1 me-2">
-                                                    <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $listaBimestre->tipoNota->tipo }}</a>
-{{--                                                    <span class="text-gray-700 fw-bold d-block fs-7">{{$listaBimestre->data}}</span>--}}
+                                                    </div>
+                                                    <!--end::Symbol-->
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                        <div class="flex-grow-1 me-2">
+                                                            <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $bimestre->tipo }}</a>
+                                                            <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
+                                                        </div>
+                                                        <div class="d-flex align-items-center me-6" id="painel">
+                                                            <a  href="javascript:;" onclick='Nota.getNotas({{ collect($bimestre) }}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                                <i class="fa-solid fa-pen fs-6"></i>
+                                                            </a>
+                                                            <a href="javascript:;" data-salvo="{{$mediasSalvas->get(0)['salvo']}}" onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class=" btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                                                <i class="fa-solid fa-trash fs-6"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <!--end::Section-->
                                                 </div>
-                                                <div class="d-flex align-items-center me-6" id="painel">
-                                                    <a  href="javascript:;" onclick="Nota.getNotas({{ collect($listaBimestre) }})"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
-                                                        <i class="fa-solid fa-pen fs-6"></i>
-                                                    </a>
-                                                    <a href="javascript:;" data-salvo="{{$mediasSalvas->get(0)['salvo']}}" class="deletar btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
-                                                        <i class="fa-solid fa-trash fs-6"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <!--end::Section-->
-                                        </div>
-                                     @endif
-                                    @endforeach</div>
+
+                                        @endforeach
+                                        @endif
+                                    </div>
                                 <div>
                                 <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
                                 <div class="separator separator-dashed separator-content  mt-12 mb-5">
@@ -325,7 +323,7 @@
             </form>
 
             <div class="my-2">
-                <a href="{{route('diario.conteudo.turma.disciplina',['turma' => $turma->id,'disciplina' => $disciplina->id])}}" class="btn d-block d-sm-none   btn-danger mb-3">Encerrar</a>
+                <a href="{{ route('diario.conteudo.turma.disciplina',['turma' => $turma->id,'disciplina' => $disciplina->id])}}" class="btn d-block d-sm-none   btn-danger mb-3">Encerrar</a>
             </div>
             <!--end::Products-->
         </div>
@@ -353,18 +351,25 @@
                     </div>
                     <!--begin::Modal body-->
                     <div class="modal-body mx-xl-10 pt-0 pb-0">
-                        <form action="{{route('diario.nota.cadastrar')}}" id="formulario-notas" method="post" >
+                        <div>
+                            <input type="hidden" name="turma_id"  value="{{$turma->id}}"/>
+                            <input type="hidden" name="disciplina_id"  value="{{$disciplina->id}}"/>
+                            <input type="hidden" class="link-primary fw-bold" id="periodo" value="0"/>
+                            <input type="hidden" class="link-primary fw-bold" id="tipo_nota_id" value="0"/>
+                            <input type="hidden" id="medias_salvas"  value="{{$mediasSalvas ? $mediasSalvas : 0}}"/>
+                        </div>
+                        <form  id="formulario-notas" method="post" >
                             <!--begin::Heading-->
-                            <div class="text-center mb-5">
+                            <div class="text-center mb-1">
                                 <!--begin::Title-->
-                                <h1 class="mb-3">Cadastrar notas</h1>
+                                <h1 class="mb-2">Cadastrar notas</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
                                 <div class="d-flex justify-content-center">
                                     <div class="text-muted fw-semibold fs-5">Turma B,</div>
                                     <div class="text-muted fw-semibold fs-5">Matematica,</div>
                                     <div class="text-muted fw-semibold fs-5">Matutino,</div>
-                                    <div class="link-primary fw-bold">1° Bimestre</div>
+                                    <div class="text-primary fw-bold fs-5">1° Bimestre</div>
                                 </div>
 
                                 <!--end::Description-->
@@ -390,31 +395,73 @@
                                                     </svg>
                                                 </span>
                                             <!--end::Svg Icon-->
-                                            <!--end::Icon-->
                                             <!--begin::Datepicker-->
                                             <input class="form-control form-control-solid ps-12 text-gray-800" placeholder="Selecione" name="data_nota" id="data_nota"/>
                                             <!--end::Datepicker-->
                                         </div>
-
                                         <!--end::Input-->
                                     </div>
-                                    <div class="col-6 col-sm-6 fv-row pb-2 ">
+                                    <div class="col-6 col-sm-6 fv-row pb-2">
                                         <label class="required texto d-none d-sm-block fw-bold mb-1">Tipo de Avaliação</label>
                                         <label class="required texto d-block d-sm-none fw-bold mb-1">T. de Avaliação</label>
-                                        <select class="form-select form-select-solid" data-placeholder="Selecione" name="tipo" id="tipo_nota">
-                                            <option  value=""></option>
-                                            <option selected value="Trabalho">Trabalho</option>
-                                            <option value="Prova">Prova</option>
-                                            <option value="Recuperação">Recuperação</option>
-                                            <option value="Conselho">Conselho</option>
+                                        <select class="form-select form-select-solid"  data-dropdown-parent="#kt_modal_nota"  data-placeholder="Selecione" name="tipo" id="tipo_nota">
+                                            <option ></option>
+                                            <option selected data-imagem='<span class="svg-icon svg-icon-primary svg-icon-2 me-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M20 14H18V10H20C20.6 10 21 10.4 21 11V13C21 13.6 20.6 14 20 14ZM21 19V17C21 16.4 20.6 16 20 16H18V20H20C20.6 20 21 19.6 21 19ZM21 7V5C21 4.4 20.6 4 20 4H18V8H20C20.6 8 21 7.6 21 7Z" fill="currentColor"/>
+                                                <path opacity="0.3" d="M17 22H3C2.4 22 2 21.6 2 21V3C2 2.4 2.4 2 3 2H17C17.6 2 18 2.4 18 3V21C18 21.6 17.6 22 17 22ZM10 7C8.9 7 8 7.9 8 9C8 10.1 8.9 11 10 11C11.1 11 12 10.1 12 9C12 7.9 11.1 7 10 7ZM13.3 16C14 16 14.5 15.3 14.3 14.7C13.7 13.2 12 12 10.1 12C8.10001 12 6.49999 13.1 5.89999 14.7C5.59999 15.3 6.19999 16 7.39999 16H13.3Z" fill="currentColor"/>
+                                                </svg>
+                                                </span>' value="Trabalho">Trabalho</option>
+                                            <option value="Prova" data-imagem='<span class="svg-icon svg-icon-danger svg-icon-2 me-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M20 14H18V10H20C20.6 10 21 10.4 21 11V13C21 13.6 20.6 14 20 14ZM21 19V17C21 16.4 20.6 16 20 16H18V20H20C20.6 20 21 19.6 21 19ZM21 7V5C21 4.4 20.6 4 20 4H18V8H20C20.6 8 21 7.6 21 7Z" fill="currentColor"/>
+                                                <path opacity="0.3" d="M17 22H3C2.4 22 2 21.6 2 21V3C2 2.4 2.4 2 3 2H17C17.6 2 18 2.4 18 3V21C18 21.6 17.6 22 17 22ZM10 7C8.9 7 8 7.9 8 9C8 10.1 8.9 11 10 11C11.1 11 12 10.1 12 9C12 7.9 11.1 7 10 7ZM13.3 16C14 16 14.5 15.3 14.3 14.7C13.7 13.2 12 12 10.1 12C8.10001 12 6.49999 13.1 5.89999 14.7C5.59999 15.3 6.19999 16 7.39999 16H13.3Z" fill="currentColor"/>
+                                                </svg>
+                                                </span>'>Prova</option>
+                                            <option value="Recuperação" data-imagem='<span class="svg-icon svg-icon-success svg-icon-2 me-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M20 14H18V10H20C20.6 10 21 10.4 21 11V13C21 13.6 20.6 14 20 14ZM21 19V17C21 16.4 20.6 16 20 16H18V20H20C20.6 20 21 19.6 21 19ZM21 7V5C21 4.4 20.6 4 20 4H18V8H20C20.6 8 21 7.6 21 7Z" fill="currentColor"/>
+                                                <path opacity="0.3" d="M17 22H3C2.4 22 2 21.6 2 21V3C2 2.4 2.4 2 3 2H17C17.6 2 18 2.4 18 3V21C18 21.6 17.6 22 17 22ZM10 7C8.9 7 8 7.9 8 9C8 10.1 8.9 11 10 11C11.1 11 12 10.1 12 9C12 7.9 11.1 7 10 7ZM13.3 16C14 16 14.5 15.3 14.3 14.7C13.7 13.2 12 12 10.1 12C8.10001 12 6.49999 13.1 5.89999 14.7C5.59999 15.3 6.19999 16 7.39999 16H13.3Z" fill="currentColor"/>
+                                                </svg>
+                                                </span>'>Recuperação</option>
+                                            <option value="Conselho" data-imagem='<span class="svg-icon svg-icon-warning svg-icon-2 me-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M20 14H18V10H20C20.6 10 21 10.4 21 11V13C21 13.6 20.6 14 20 14ZM21 19V17C21 16.4 20.6 16 20 16H18V20H20C20.6 20 21 19.6 21 19ZM21 7V5C21 4.4 20.6 4 20 4H18V8H20C20.6 8 21 7.6 21 7Z" fill="currentColor"/>
+                                                <path opacity="0.3" d="M17 22H3C2.4 22 2 21.6 2 21V3C2 2.4 2.4 2 3 2H17C17.6 2 18 2.4 18 3V21C18 21.6 17.6 22 17 22ZM10 7C8.9 7 8 7.9 8 9C8 10.1 8.9 11 10 11C11.1 11 12 10.1 12 9C12 7.9 11.1 7 10 7ZM13.3 16C14 16 14.5 15.3 14.3 14.7C13.7 13.2 12 12 10.1 12C8.10001 12 6.49999 13.1 5.89999 14.7C5.59999 15.3 6.19999 16 7.39999 16H13.3Z" fill="currentColor"/>
+                                                </svg>
+                                                </span>'>Conselho</option>
                                         </select>
 
                                     </div>
                                     <!--end::Col-->
                                 </div >
                                 <!--end::Input group-->
+                                <div class="d-flex justify-content-between flex-nowrap" id="radios">
+                                    <div class="form-check form-check-custom form-check-success form-check-solid">
+                                        <input class="form-check-input" type="radio" value="7.0" name="nota_radio" />
+                                        <label class="form-check-label text-gray-800" for="flexCheckboxLg">
+                                            7.0
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check form-check-custom form-check-danger form-check-solid">
+                                        <input class="form-check-input" type="radio" value="8.0" name="nota_radio"  />
+                                        <label class="form-check-label text-gray-800" for="flexCheckboxSm">
+                                            8.0
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check form-check-custom form-check-warning form-check-solid">
+                                        <input class="form-check-input" type="radio" value="9.0" name="nota_radio" />
+                                        <label class="form-check-label text-gray-800" for="flexRadioLg">
+                                            9.0
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-custom form-check-primary form-check-solid">
+                                        <input class="form-check-input" type="radio" value="10.0" name="nota_radio" />
+                                        <label class="form-check-label text-gray-800" for="flexRadioLg">
+                                            10.0
+                                        </label>
+                                    </div>
+                                </div>
                                 <!--begin::List-->
-                                <div class="modal-alunos-notas me-n7 pe-7 bg-light-primary">
+                                <div class="modal-alunos-notas me-n7 pe-7 ">
                                     @if(!empty($matriculas))
                                         @foreach($matriculas as $key => $matricula)
                                             <!--begin::User-->
@@ -433,6 +480,7 @@
                                                     <!--end::Avatar-->
                                                     <!--begin::Details-->
                                                     <div class="ms-6">
+
                                                         <!--begin::Name-->
                                                         <div class="d-flex align-items-center texto fw-bold text-dark text-hover-primary ">
                                                             {{$matricula->nome}}
@@ -451,7 +499,7 @@
                                                     <!--begin::Sales-->
                                                     <div class="text-end">
                                                         <div class="w-60px">
-                                                            <input type="text" id="nota" data-aluno_id="{{ $matricula->aluno_id }}" data-nota-filter="nota" class="form-control texto form-control-solid text-center text-gray-800 bg-light-primary nota"/>
+                                                            <input type="text" id="nota" data-aluno_id="{{ $matricula->aluno_id }}" data-nota_id="0" data-nota-filter="nota" class="form-control texto form-control-solid text-center text-gray-800 bg-light-primary nota"/>
                                                         </div>
                                                     </div>
                                                     <!--end::Sales-->
@@ -461,7 +509,6 @@
                                             <!--end::User-->
                                         @endforeach
                                     @endif
-
                                 </div>
                                 <!--end::List-->
                             </div>
@@ -506,8 +553,8 @@
                     </div>
                     <!--begin::Modal header-->
                     <!--begin::Modal body-->
-                    <div class="modal-body mx-xl-10 pt-0 pb-0" >
-                        <form action="{{route('diario.nota.cadastrar')}}" id="formulario-medias" method="post">
+                    <div class="modal-body mx-xl-10 pt-0 pb-0">
+                        <form id="formulario-medias" method="post">
                             <!--begin::Heading-->
                             <div class="text-center mb-5">
                                 <!--begin::Title-->
@@ -518,7 +565,6 @@
                                     <div class="text-muted fw-semibold fs-5">Matematica - </div>
                                     <div class="link-primary fw-bold">1° Bimestre</div>.
                                 </div>
-
                                 <!--end::Description-->
                             </div>
 
@@ -601,7 +647,7 @@
 @once
     @push('js')
         <script src="{{asset('assets/plugins/custom/datatables/datatables.bundle.js')}}"></script>
-        <script src="{{asset('assets/js/diario/bimestres/bimestres_table.js')}}"></script>
+{{--        <script src="{{asset('assets/js/diario/bimestres/bimestres_table.js')}}"></script>--}}
         <script src="{{asset('assets/js/diario/notas/nota_table.js')}}"></script>
 {{--        <script src="{{asset('assets/js/diario/media/mediabim_table.js')}}"></script>--}}
     @endpush

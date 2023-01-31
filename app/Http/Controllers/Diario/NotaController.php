@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Disciplina;
 use App\Models\Admin\Turma;
 use App\Models\Diario\Escola;
+use App\Models\Diario\Matricula;
 use App\Models\Diario\MediaAnual;
 use App\Models\Diario\MediaBimestral;
 use App\Models\Diario\Nota;
@@ -451,16 +452,17 @@ class NotaController extends Controller
     public function cadastrar(Request $request){
 
             $tipoNota = new TipoNota();
-            //$notaTipo = 90043;//$this->popular_tipo_nota($request, $tipoNota);
-            $notaTipo = TipoNota::find(90043);
+            $tipoNota = $this->popular_tipo_nota($request, $tipoNota);
 
-            if ($notaTipo->id > 0){
+            if ($tipoNota->id > 0){
                 $notas = json_decode($request->input('notas'));
+
+
                 foreach ($notas as $resultado){
                     $nota = new Nota();
                     $nota->nota = $resultado->nota;
                     $nota->aluno_id = $resultado->alunoId;
-                    $nota->tipo_nota_id = $notaTipo->id;
+                    $nota->tipo_nota_id = $tipoNota->id;
                     $nota->professor_id = 12;
                     $nota->periodo_id = $request->periodo_id;
                     $nota->turma_id = $request->turma_id;
@@ -469,47 +471,116 @@ class NotaController extends Controller
                     $nota->anoletivo_id = 2;
                     $nota->save();
                 }
+                $listanotas = Nota::leftJoin('tipo_notas', "tipo_notas.id",'=', 'notas.tipo_nota_id')
+                    ->select('notas.id','notas.nota','tipo_notas.data','tipo_notas.tipo')
+                    ->where('notas.tipo_nota_id', $tipoNota->id)
+                    ->where('notas.periodo_id', $request->periodo_id)
+                    ->get();
+
                 $msg = $this->message->success(title:'Parabéns', message:'Notas cadastrada com sucesso.');
-                return response()->json($msg);
+                $json = ['resposta' => true,'periodo_id' => $request->periodo_id,'data'=> (new \DateTime($request->tipo_nota_data))->format('d/m/Y'),
+                    'tipo'=> $request->tipo_nota_tipo, 'tipo_nota_id' => $tipoNota->id, 'notasAlunos'=> $listanotas,'msn' => $msg];
+                return response()->json($json);
             }
             $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
-            return response()->json($msg);
+            $json = ['resposta' => false,'msn' => $msg];
+            return response()->json($json);
     }
     public function atualizar(Request $request){
 
         $tipoNota = TipoNota::find($request->tipo_nota_id);
-        $notaTipo = $this->popular_tipo_nota($request, $tipoNota);
-        if ($notaTipo->id > 0){
-           // $this->popular_notas($request, $notaTipo);
+        $tipoNota->data = $request->tipo_nota_data;
+        $tipoNota->tipo = $request->tipo_nota_tipo;
+        $tipoNota->save();
+        if ($tipoNota->id > 0){
+            $notas = json_decode($request->input('notas'));
+            foreach ($notas as $resultado){
+                $nota = Nota::find($resultado->nota_id);
+                $nota->nota = $resultado->nota;
+                $nota->save();
+            }
+            $listanotas = Nota::leftJoin('tipo_notas', "tipo_notas.id",'=', 'notas.tipo_nota_id')
+                ->select('notas.id','notas.nota','notas.aluno_id', 'notas.tipo_nota_id')
+                ->where('notas.tipo_nota_id', $tipoNota->id)
+                ->where('notas.periodo_id', $request->periodo_id)
+                ->get();
+
             $msg = $this->message->success(title:'Parabéns', message:'Notas atualizadas com sucesso.');
-            return response()->json($msg);
+            $json = ['resposta' => true,'periodo_id' => $request->periodo_id,'data'=> (new \DateTime($request->tipo_nota_data))->format('d/m/Y'),
+                'tipo'=> $request->tipo_nota_tipo, 'tipo_nota_id' => $tipoNota->id,'notasAlunos'=> $listanotas,'msn' => $msg];
+            return response()->json($json);
         }
         $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
-        return response()->json($msg);
+        $json = ['resposta' => false,'msn' => $msg];
+        return response()->json($json);
 
     }
 
-    public function popular_tipo_nota(Request $request, TipoNota $notaTipo){
-
-        if ($notaTipo->id > 0){
-            $notaTipo->data = $request->data_nota;
-            $notaTipo->tipo = $request->tipo_nota;
-            $notaTipo->save();
-        }else{
-            $notaTipo->data = $request->data_nota;
-            $notaTipo->tipo = $request->tipo_nota;
-
-            $notaTipo->periodo_id = $request->periodo_id;
-            $notaTipo->turma_id = $request->turma_id;
-            $notaTipo->disciplina_id = $request->disciplina_id;
-
-            $notaTipo->professor_id = 12;
-
-            $notaTipo->escola_id = 2;
-            $notaTipo->anoletivo_id = 2;
-            $notaTipo->save();
+    public function deletar(int $id){
+        $tipoNota = TipoNota::find($id);
+        if (!empty($tipoNota)){
+            $notas = Nota::where('tipo_nota_id', $tipoNota->id)->get();
+            if (!empty($notas)){
+                foreach ($notas as $nota){
+                    $nota->delete();
+                }
+                $tipoNota->delete();
+            }
+            $json['data'] = $this->message->success(title:'success', message: 'Avaliação excluída com sucesso.')->render();
+            return response()->json($json);
         }
 
+        $json['data'] = $this->message->success(title:'error', message: 'Erro ao excluir a avaliação.')->render();
+        return response()->json($json);
+    }
+
+    public function salvarmedia(int $periodo_id){
+
+        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.aluno_nome','alunos.aluno_inep')
+            ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
+            ->where('matriculas.turma_id', 4)
+            ->where('matriculas.escola_id', 2)
+            ->where('matriculas.anoletivo_id', 2)
+            ->orderBy('numero')
+            ->get();
+
+        $notas = Nota::where('periodo_id', $periodo_id)->get();
+
+        foreach ($matriculas as $matricula){
+            $notas = $notas->where('aluno_id',$matricula->aluno_id);
+            $media = $notas->avg();
+            $mediaBimestral = new MediaBimestral();
+            $mediaBimestral->aluno_id = $matricula->aluno_id;
+            //$mediaBimestral->professor_id = $nota->professor_id;
+            $mediaBimestral->periodo_id = $nota->periodo_id;
+            $mediaBimestral->anoletivo_id = $nota->anoletivo_id;
+            $mediaBimestral->escola_id = $nota->escola_id;
+            $mediaBimestral->turma_id = $nota->turma_id;
+            $mediaBimestral->disciplina_id = $nota->disciplina_id;
+
+            $notas->each(function ($nota) {
+
+            });
+
+        }
+
+
+        return response()->json('');
+    }
+    public function popular_tipo_nota(Request $request, TipoNota $notaTipo){
+
+        $notaTipo->data = $request->tipo_nota_data;
+        $notaTipo->tipo = $request->tipo_nota_tipo;
+
+        $notaTipo->periodo_id = $request->periodo_id;
+        $notaTipo->turma_id = $request->turma_id;
+        $notaTipo->disciplina_id = $request->disciplina_id;
+
+        $notaTipo->professor_id = 12;
+
+        $notaTipo->escola_id = 2;
+        $notaTipo->anoletivo_id = 2;
+        $notaTipo->save();
 
         return $notaTipo;
     }
