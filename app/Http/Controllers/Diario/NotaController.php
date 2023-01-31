@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Diario;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Disciplina;
 use App\Models\Admin\Turma;
+use App\Models\Diario\Anoletivo;
 use App\Models\Diario\Escola;
 use App\Models\Diario\Matricula;
 use App\Models\Diario\MediaAnual;
@@ -515,6 +516,20 @@ class NotaController extends Controller
         return response()->json($json);
 
     }
+    function formatar_media($media){
+
+        $media = number_format($media,1);
+        $arr = explode('.',$media);
+
+        if ((float)$arr[1] >= 7){
+            $media = ceil($media);
+        }else if ((float)$arr[1] < 4){
+            $media = floor($media);
+        }else if ((float)$arr[1] <= 6){
+            $media = (float)$arr[0] + 0.5;
+        }
+        return number_format($media,1);
+    }
 
     public function deletar(int $id){
         $tipoNota = TipoNota::find($id);
@@ -544,28 +559,66 @@ class NotaController extends Controller
             ->orderBy('numero')
             ->get();
 
-        $notas = Nota::where('periodo_id', $periodo_id)->get();
+        $notas = Nota::select('notas.nota','notas.aluno_id','tipo_notas.tipo')
+            ->leftJoin('tipo_notas','tipo_notas.id', 'notas.tipo_nota_id')
+            ->where('notas.periodo_id', $periodo_id)
+            ->where('notas.escola_id', 2)
+            ->where('notas.anoletivo_id', 2)
+            ->orderBy('notas.aluno_id')
+            ->get();
 
-        foreach ($matriculas as $matricula){
-            $notas = $notas->where('aluno_id',$matricula->aluno_id);
-            $media = $notas->avg();
+        $mediaSalva = false;
+        $mediaAnual =  Anoletivo::find(2)->media;
+
+        foreach ($matriculas as $matricula) {
             $mediaBimestral = new MediaBimestral();
+            $notasAluno = $notas->where('aluno_id', $matricula->aluno_id);
+            $media = $notasAluno->avg('nota');
+            $mediaBimestral->media = $this->formatar_media($media);
+
+            if ($media >= $mediaAnual){
+                $mediaBimestral->status = "NAMEDIA";
+                $mediaBimestral->status_sigla = "ACM";
+            }else{
+                $mediaBimestral->status = "ABAIXOMEDIA";
+                $mediaBimestral->status_sigla = "ABM";
+            }
+
             $mediaBimestral->aluno_id = $matricula->aluno_id;
-            //$mediaBimestral->professor_id = $nota->professor_id;
-            $mediaBimestral->periodo_id = $nota->periodo_id;
-            $mediaBimestral->anoletivo_id = $nota->anoletivo_id;
-            $mediaBimestral->escola_id = $nota->escola_id;
-            $mediaBimestral->turma_id = $nota->turma_id;
-            $mediaBimestral->disciplina_id = $nota->disciplina_id;
-
-            $notas->each(function ($nota) {
-
-            });
-
+            $mediaBimestral->professor_id = 12;
+            $mediaBimestral->periodo_id = $periodo_id;
+            $mediaBimestral->anoletivo_id = 2;
+            $mediaBimestral->escola_id = 2;
+            $mediaBimestral->turma_id = 4;
+            $mediaBimestral->disciplina_id = 9;
+            foreach ($notasAluno as $nota) {
+                if ($nota->tipo === "Recuperação"){
+                    $mediaBimestral->recuperacao = $nota->nota;
+                }else{
+                    if (empty($mediaBimestral->nota1)){
+                        $mediaBimestral->nota1 = $nota->nota;
+                    }else if (empty($mediaBimestral->nota2)){
+                        $mediaBimestral->nota2 = $nota->nota;
+                    }else if (empty($mediaBimestral->nota3)){
+                        $mediaBimestral->nota3 =$nota->nota;
+                    }else if (empty($mediaBimestral->nota4)){
+                        $mediaBimestral->nota4 = $nota->nota;
+                    }
+                }
+            }
+            $mediaBimestral->save();
+            if ($mediaBimestral->id > 0){
+                $mediaSalva = true;
+            }
         }
 
+        if ($mediaSalva){
+            $json = ['salvo'=> $mediaSalva,'msn' => $this->message->success(title:'success', message: 'Média salva com sucesso.')->render()];
+            return response()->json($json);
+        }
 
-        return response()->json('');
+        $json = ['salvo'=> $mediaSalva,'msn' => $this->message->success(title:'error', message: 'Erro ao salvar a média.')->render()];
+        return response()->json($json);
     }
     public function popular_tipo_nota(Request $request, TipoNota $notaTipo){
 

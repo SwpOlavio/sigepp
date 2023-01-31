@@ -10,11 +10,11 @@ class Anoletivo extends Model
     use HasFactory;
     protected $fillable = [
         'descricao',
-        'data_inicio',
-        'data_fim',
-        'data_matricula_inicio',
-        'data_matricula_fim',
-        'qtde_turma',
+        'inicio',
+        'fim',
+        'ini_matricula',
+        'fim_matricula',
+        'n_turma',
         'media',
         'escola_id',
     ];

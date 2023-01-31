@@ -8,17 +8,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Disciplina;
 use App\Models\Admin\Turma;
 use App\Models\Admin\TurmaProfessor;
+use App\Models\Diario\Anoletivo;
 use App\Models\Diario\Matricula;
 use App\Models\Diario\MediaBimestral;
 use App\Models\Diario\Nota;
 use App\Models\Diario\PeriodoTurma;
 use App\Models\Diario\TipoNota;
+use Illuminate\Support\Facades\DB;
 
 class BimestreController extends Controller
 {
     public function listar(Turma $turma, Disciplina $disciplina)
     {
-
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.aluno_nome','alunos.aluno_inep')
             ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
             ->where('matriculas.turma_id', 4)

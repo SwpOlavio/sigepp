@@ -187,34 +187,46 @@ var Nota = (function () {
                     }
                 });
         },
-        salvarMedia = (periodo_id) => {
+        salvarMedia = () => {
 
-            Swal.fire({
-                text: "Você tem certeza que deseja excluir esta avaliação ?",
-                icon: "warning",
-                showCancelButton: !0,
-                buttonsStyling: !1,
-                confirmButtonText: "Sim, excluir!",
-                cancelButtonText: "Não, cancelar",
-                customClass: { confirmButton: "btn fw-bold btn-danger", cancelButton: "btn fw-bold btn-active-light-primary" },
-            })
-                .then(function (t) {
+            document.querySelectorAll('[data-media-filter="mediabim"]').forEach((btn) => {
+                btn.addEventListener('click', function (e){
+                    e.preventDefault()
+                    btn.setAttribute("data-kt-indicator", "on")
+                    btn.disabled = !0
 
-                    if (t.value) {
-                        fetch(BaseUrl + '/diario/nota/'+periodo_id+"/salvarmedia").then(response => response.json())
-                            .then(data => {
-                                console.log(data)
-                                Swal.fire({
-                                    text: data.data.message,
-                                    icon: data.data.title, buttonsStyling: !1,
-                                    confirmButtonText: "Ok, entendi!",
-                                    customClass: { confirmButton: "btn fw-bold btn-primary" }
-                                }).then(function () {
-
-                                })
-                            });
-                    }
+                    fetch(BaseUrl + '/diario/nota/'+btn.dataset.periodo_id+"/salvarmedia").then(response => response.json())
+                        .then(data => {
+                            console.log(data)
+                            Swal.fire({
+                                text: data.msn.message,
+                                icon: data.msn.title,
+                                buttonsStyling: !1,
+                                confirmButtonText: "Ok, entendi!",
+                                customClass: { confirmButton: "btn fw-bold btn-primary" }
+                            }).then(function () {
+                                btn.setAttribute("data-kt-indicator", "on")
+                                btn.disabled = !1
+                            })
+                        });
                 });
+            });
+
+            /*
+            fetch(BaseUrl + '/diario/nota/'+periodo_id+"/salvarmedia").then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    Swal.fire({
+                        text: data.data.message,
+                        icon: data.data.title, buttonsStyling: !1,
+                        confirmButtonText: "Ok, entendi!",
+                        customClass: { confirmButton: "btn fw-bold btn-primary" }
+                    }).then(function () {
+
+                    })
+                });
+
+            */
         },
         listarNotas = () => {
 
@@ -341,6 +353,7 @@ var Nota = (function () {
             })
             validarNota()
             notaRadio()
+            salvarMedia()
         },
         getPeriodo: function (periodo){
             document.querySelector('#periodo').value = periodo
@@ -361,10 +374,7 @@ var Nota = (function () {
         },
         deletar: function (id, objeto){
             deletar(id, objeto)
-        },
-        salvarMedia: function (periodo_id){
-            salvarMedia(periodo_id)
-        },
+        }
     };
 })();
 KTUtil.onDOMContentLoaded(function () {

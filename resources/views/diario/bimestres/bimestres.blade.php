@@ -244,16 +244,24 @@
                                 </h3>
                                 <div class="card-toolbar">
                                     <!--begin:: Se o primeiro bimestre está salvo-->
-                                    @if($mediasSalvas->get(0)['salvo'])
+                                    @if(!$mediasSalvas->get(0)['salvo'])
                                         <a href="javascript:;" class="btn btn-primary d-block d-sm-none  me-3" onclick="Nota.getPeriodo({{$periodos[0]->id}})" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</a>
                                         <a href="javascript:;" class="btn btn-light-primary d-none d-sm-block me-3" onclick="Nota.getPeriodo({{$periodos[0]->id}})" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota </a>
                                     @else
                                         <button  class="btn btn-primary d-block d-sm-none  me-3" disabled>Nota</button>
                                         <button  class="btn btn-light-primary  d-none d-sm-block me-3" disabled>Nota</button>
                                     @endif
-                                    @if(false)
-                                        <a href="{{route('diario.mediabim.turma.disciplina.periodo',['turma' => $turma->id,'disciplina' => $disciplina->id,'periodo' => $periodos[0]->id])}}" class="btn  btn-danger d-block d-sm-none" data-bs-toggle="modal" data-bs-target="#kt_modal_media">Média</a>
-                                        <a href="{{route('diario.mediabim.turma.disciplina.periodo',['turma' => $turma->id,'disciplina' => $disciplina->id,'periodo' => $periodos[0]->id])}}" class="btn  btn-light-danger d-none d-sm-block" data-bs-toggle="modal" data-bs-target="#kt_modal_media">Média</a>
+                                    @if(!$mediasSalvas->get(0)['salvo'])
+                                        <button  data-periodo_id="{{$periodos[0]->id}}" data-btn="1" data-media-filter="mediabim" class="btn btn-danger d-block d-sm-none">
+                                            <span class="indicator-label">Média</span>
+                                            <span class="indicator-progress">Aguarde
+									        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                        </button>
+                                        <button  data-periodo_id="{{$periodos[0]->id}}" data-btn="2" data-media-filter="mediabim" class="btn  btn-light-danger d-none d-sm-block">
+                                            <span class="indicator-label">Média</span>
+                                            <span class="indicator-progress">Aguarde
+									        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                        </button>
                                     @else
                                         <button  class="btn  btn-danger d-block d-sm-none" disabled>Média</button>
                                         <button  class="btn  btn-light-danger d-sm-block" disabled>Média</button>
@@ -306,10 +314,11 @@
                                 <div>
                                 <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
                                 <div class="separator separator-dashed separator-content  mt-12 mb-5">
-                                    <button class="btn btn-icon me-5"><i class="las la-print text-warning fs-2 "></i></button>
-                                    <button class="btn btn-icon me-5 d-none"><i class="las la-lock-open text-success fs-2"></i></button>
-                                    <button class="btn btn-icon me-5 "><i class="las la-lock text-danger fs-2 "></i></button>
-                                    <button class="btn btn-icon"><i class="las la-file-alt text-info fs-2"></i></button>
+                                    <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
+                                    <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
+                                    <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
+                                    <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
+                                    <button class="btn btn-icon" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
                                 </div>
                                 </div>
                                 <!--end::Item-->
