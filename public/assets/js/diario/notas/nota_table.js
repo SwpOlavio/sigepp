@@ -205,8 +205,11 @@ var Nota = (function () {
                                 confirmButtonText: "Ok, entendi!",
                                 customClass: { confirmButton: "btn fw-bold btn-primary" }
                             }).then(function () {
-                                btn.setAttribute("data-kt-indicator", "on")
-                                btn.disabled = !1
+                                if (!data.salvo){
+                                    btn.disabled = !1
+                                }
+                                btn.removeAttribute("data-kt-indicator", "on")
+
                             })
                         });
                 });

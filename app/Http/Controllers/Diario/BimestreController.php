@@ -127,9 +127,9 @@ class BimestreController extends Controller
         $index=0;
 
         foreach ($periodoPofessors as $periodoPofessor){
-            $tipoNotas = $tipoNotas->where('periodo_id', $periodoPofessor->id);
+            $tipoNotasLista = $tipoNotas->where('periodo_id', $periodoPofessor->id);
 
-            foreach ($tipoNotas as $tipoNota) {
+            foreach ($tipoNotasLista as $tipoNota) {
                 $lista = [];
                 $notasAlunos = $notas->where('tipo_nota_id', $tipoNota->id);
                 if (!empty($notasAlunos)) {
