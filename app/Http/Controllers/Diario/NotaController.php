@@ -516,21 +516,6 @@ class NotaController extends Controller
         return response()->json($json);
 
     }
-    function formatar_media($media){
-
-        $media = number_format($media,1);
-        $arr = explode('.',$media);
-
-        if ((float)$arr[1] >= 7){
-            $media = ceil($media);
-        }else if ((float)$arr[1] < 4){
-            $media = floor($media);
-        }else if ((float)$arr[1] <= 6){
-            $media = (float)$arr[0] + 0.5;
-        }
-        return number_format($media,1);
-    }
-
     public function deletar(int $id){
         $tipoNota = TipoNota::find($id);
         if (!empty($tipoNota)){
@@ -548,8 +533,7 @@ class NotaController extends Controller
         $json['data'] = $this->message->success(title:'error', message: 'Erro ao excluir a avaliação.')->render();
         return response()->json($json);
     }
-
-    public function salvarmedia(int $periodo_id){
+    public function salvarmedia(int $periodo_id){ // Falta a turma e a disciplina
 
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.aluno_nome','alunos.aluno_inep')
             ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
@@ -653,6 +637,21 @@ class NotaController extends Controller
         $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
         return redirect()->route('diario.notatipo.listarNotas',['turma'=>$turma,'disciplina' => $disciplina])->with('status',$msg);
 
+    }
+
+    function formatar_media($media){
+
+        $media = number_format($media,1);
+        $arr = explode('.',$media);
+
+        if ((float)$arr[1] >= 7){
+            $media = ceil($media);
+        }else if ((float)$arr[1] < 4){
+            $media = floor($media);
+        }else if ((float)$arr[1] <= 6){
+            $media = (float)$arr[0] + 0.5;
+        }
+        return number_format($media,1);
     }
 
 }

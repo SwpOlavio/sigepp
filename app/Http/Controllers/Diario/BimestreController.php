@@ -72,7 +72,7 @@ class BimestreController extends Controller
 
         // Listar os bimestres ------------------------------------------------------------------
 
-        $periodoPofessors = TurmaProfessor::select('periodo_turmas.id', 'periodo_turmas.ordem')
+        $turmaProfessores = TurmaProfessor::select('periodo_turmas.id', 'periodo_turmas.ordem')
             ->leftJoin('periodo_turmas','periodo_turmas.tpd','turma_professors.id')
             ->where('turma_professors.turma_id', $turma->id)
             ->where('turma_professors.disciplina_id', $disciplina->id)
@@ -83,7 +83,6 @@ class BimestreController extends Controller
             ->get();
         // 727 a 733
 
-
         // Verifica se tem nota cadastrada (Trabaho, Prova, ...)
         $tipoNotas = TipoNota::where('turma_id', $turma->id)
             ->where('disciplina_id', $disciplina->id)
@@ -92,8 +91,6 @@ class BimestreController extends Controller
             ->where('professor_id', 12)
             ->select('id', 'data', 'tipo', 'periodo_id')
             ->get();
-
-
 
 
 //        $tipoNotas->each(function($item) use ($periodoPofessors) {
@@ -126,7 +123,7 @@ class BimestreController extends Controller
         $lista = [];
         $index=0;
 
-        foreach ($periodoPofessors as $periodoPofessor){
+        foreach ($turmaProfessores as $periodoPofessor){
             $tipoNotasLista = $tipoNotas->where('periodo_id', $periodoPofessor->id);
 
             foreach ($tipoNotasLista as $tipoNota) {
@@ -145,10 +142,8 @@ class BimestreController extends Controller
                         'tipo' => $tipoNota->tipo,
                         'tipo_nota_id' => $tipoNota->id,
                         'notasAlunos' => $listaAlunos
-
                     ];
             }
-
         }
 
         //dd($listaBimestres[1]);
@@ -165,13 +160,15 @@ class BimestreController extends Controller
             ->where('anoletivo_id', 2)
             ->get();
 
-        $listaMediasSalvas = $periodoPofessors->map(function($item) use ($mediasBimestralais){
+
+        $listaMediasSalvas = $turmaProfessores->map(function($item) use ($mediasBimestralais){
             if ($item->ordem <= 4){
                 return ([
                     'ordem' => $item->ordem,
-                    'salvo' => $mediasBimestralais->where('periodo_id', $item->id)->where('media', '>', 0)->count() > 0 ? 1: 0
+                    'salvo' => $mediasBimestralais->where('periodo_id', $item->id)->count() > 0 ? 1 : 0
                 ]);
             }
+            return null;
         });
 
         //--------------------------------------------------------------------------------------------------------
@@ -183,11 +180,23 @@ class BimestreController extends Controller
                 'bimestre3' => $bimestre3,
                 'bimestre4' => $bimestre4,
                 'mediasSalvas' => $listaMediasSalvas,
-                'periodos' => $periodoPofessors,
+                'periodos' => $turmaProfessores,
                 'matriculas' => $matriculas_lista,
                 'series' => $series,
                 'multisseriada' => $multisseriada,
             ]
         );
+    }
+    public function limparmediaBim(int $periodo){
+        $mediaBimestrals = MediaBimestral::where('periodo_id', $periodo)->get();
+        if (!empty($mediaBimestrals)){
+            foreach ($mediaBimestrals as $media){
+                $media->delete();
+            }
+            $json['data'] = $this->message->success(title:'success', message: 'Média bimestral limpa com sucesso.')->render();
+            return response()->json($json);
+        }
+        $json['data'] = $this->message->error(title:'error', message: 'Erro ao fechar o bimestre.')->render();
+        return response()->json($json);
     }
 }

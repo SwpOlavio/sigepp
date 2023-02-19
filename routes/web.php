@@ -218,7 +218,9 @@ Route::group(['namespace'=>'Diario', 'prefix'=>'diario', 'as'=>'diario.'], funct
 //        Route::get('/conteudoCampo/turma/{turma}/disciplina/{disciplina}/copiarHabilidades', [ConteudoCampoController::class, "copiarHabilidades"])->name('conteudo.copiarHabilidades');
 
         /** Bimestres */
+        Route::get('/bimestres/limparmediaBim/periodo/{periodo}', [BimestreController::class, "limparmediaBim"])->name('bimestres.limparmediaBim.periodo');
         Route::get('/bimestres/turma/{turma}/disciplina/{disciplina}/listar', [BimestreController::class, "listar"])->name('bimestres.turma.disciplina');
+
         Route::get('/bimestres/{tipoNota}/deletar', [BimestreController::class,'destroy'])->name('bimestres.destroy');
         Route::resource('/bimestres', '\App\Http\Controllers\Diario\BimestreController')->except('destroy'); // vou tirar
         /** Fim Bimestres */

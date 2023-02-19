@@ -16,6 +16,10 @@ var Nota = (function () {
         periodoAtual,
         bimestreNotas,
         modalNota,
+        formB1,
+        formB2,
+        formB3,
+        formB4,
         submit = () => {
         v = false;
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
@@ -58,8 +62,6 @@ var Nota = (function () {
                 }
                 dadosInput.push(dado)
             });
-
-
 
             formData.set("notas",JSON.stringify(dadosInput))
             formData.set("tipo_nota_id",tipo_nota_id)
@@ -189,29 +191,47 @@ var Nota = (function () {
         },
         salvarMedia = () => {
 
-            document.querySelectorAll('[data-media-filter="mediabim"]').forEach((btn) => {
+            formB1.querySelectorAll('[data-media-filter="mediabim"]').forEach((btn) => {
                 btn.addEventListener('click', function (e){
                     e.preventDefault()
                     btn.setAttribute("data-kt-indicator", "on")
                     btn.disabled = !0
 
-                    fetch(BaseUrl + '/diario/nota/'+btn.dataset.periodo_id+"/salvarmedia").then(response => response.json())
-                        .then(data => {
-                            console.log(data)
-                            Swal.fire({
-                                text: data.msn.message,
-                                icon: data.msn.title,
-                                buttonsStyling: !1,
-                                confirmButtonText: "Ok, entendi!",
-                                customClass: { confirmButton: "btn fw-bold btn-primary" }
-                            }).then(function () {
-                                if (!data.salvo){
+                        Swal.fire({
+                            text: "Você deseja salvar as médias?",
+                            icon: "warning",
+                            showCancelButton: !0,
+                            buttonsStyling: !1,
+                            confirmButtonText: "Sim, salvar!",
+                            cancelButtonText: "Não, cancelar",
+                            customClass: { confirmButton: "btn fw-bold btn-danger", cancelButton: "btn fw-bold btn-active-light-primary" },
+                        })
+                            .then(function (t) {
+
+                                if (t.value) {
+                                    fetch(BaseUrl + '/diario/nota/'+btn.dataset.periodo_id+"/salvarmedia").then(response => response.json())
+                                        .then(data => {
+                                            console.log(data)
+                                            Swal.fire({
+                                                text: data.msn.message,
+                                                icon: data.msn.title,
+                                                buttonsStyling: !1,
+                                                confirmButtonText: "Ok, entendi!",
+                                                customClass: { confirmButton: "btn fw-bold btn-primary" }
+                                            }).then(function () {
+                                                if (!data.salvo){
+                                                    btn.disabled = !1
+                                                }
+                                                btn.removeAttribute("data-kt-indicator", "on")
+                                                formB1.querySelector("[data-btn-filter='limparmediabim']").disabled = !1
+                                                formB1.querySelector("[data-media-filter='notabim']").disabled = !0
+                                            })
+                                        });
+                                }else{
+                                    btn.removeAttribute("data-kt-indicator", "on")
                                     btn.disabled = !1
                                 }
-                                btn.removeAttribute("data-kt-indicator", "on")
-
-                            })
-                        });
+                            });
                 });
             });
 
@@ -326,7 +346,13 @@ var Nota = (function () {
 
     return {
         init: function () {
+
+            formB1 = document.getElementById('formulario_bim1');
+
+
             cancelButton = document.getElementById('kt_modal_cancelar');
+
+
             modalNota = document.querySelector('#kt_modal_nota')
             modal = new bootstrap.Modal(modalNota)
             form = document.querySelector("#formulario-notas")
@@ -378,9 +404,9 @@ var Nota = (function () {
         deletar: function (id, objeto){
             deletar(id, objeto)
         }
+
     };
 })();
 KTUtil.onDOMContentLoaded(function () {
     Nota.init();
-
 });

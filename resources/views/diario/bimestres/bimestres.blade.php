@@ -230,7 +230,7 @@
             </div>
             <!--end::Informações-->
             <!--end::Informações-->
-            <form action="{{route('diario.conteudo.faltas.salvarFaltas')}}" id="formulario" method="post">
+            <form action="{{route('diario.conteudo.faltas.salvarFaltas')}}" id="formulario_bim1" method="post">
                 @csrf
                 <div class="row g-5 g-xl-5 ">
                     <div class="col-xl-6">
@@ -244,28 +244,14 @@
                                 </h3>
                                 <div class="card-toolbar">
                                     <!--begin:: Se o primeiro bimestre está salvo-->
-                                    @if(!$mediasSalvas->get(0)['salvo'])
-                                        <a href="javascript:;" class="btn btn-primary d-block d-sm-none  me-3" onclick="Nota.getPeriodo({{$periodos[0]->id}})" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</a>
-                                        <a href="javascript:;" class="btn btn-light-primary d-none d-sm-block me-3" onclick="Nota.getPeriodo({{$periodos[0]->id}})" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota </a>
-                                    @else
-                                        <button  class="btn btn-primary d-block d-sm-none  me-3" disabled>Nota</button>
-                                        <button  class="btn btn-light-primary  d-none d-sm-block me-3" disabled>Nota</button>
-                                    @endif
-                                    @if(!$mediasSalvas->get(0)['salvo'])
-                                        <button  data-periodo_id="{{$periodos[0]->id}}" data-btn="1" data-media-filter="mediabim" class="btn btn-danger d-block d-sm-none">
+                                        <button {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}}  class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
+                                                onclick="Nota.getPeriodo({{$periodos[0]->id}})" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button>
+
+                                        <button {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[0]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
                                             <span class="indicator-label">Média</span>
                                             <span class="indicator-progress">Aguarde
 									        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                                         </button>
-                                        <button  data-periodo_id="{{$periodos[0]->id}}" data-btn="2" data-media-filter="mediabim" class="btn  btn-light-danger d-none d-sm-block">
-                                            <span class="indicator-label">Média</span>
-                                            <span class="indicator-progress">Aguarde
-									        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
-                                    @else
-                                        <button  class="btn  btn-danger d-block d-sm-none" disabled>Média</button>
-                                        <button  class="btn  btn-light-danger d-sm-block" disabled>Média</button>
-                                    @endif
                                     <!--end::Menu-->
                                 </div>
                             </div>
@@ -312,13 +298,13 @@
                                         @endif
                                     </div>
                                 <div>
-                                <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
+                                <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções {{$mediasSalvas->get(0)['salvo']}}</span></div>
                                 <div class="separator separator-dashed separator-content  mt-12 mb-5">
                                     <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
                                     <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
                                     <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
                                     <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
-                                    <button class="btn btn-icon" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
+                                    <button class="btn btn-icon" {{!$mediasSalvas->get(0)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
                                 </div>
                                 </div>
                                 <!--end::Item-->
@@ -656,7 +642,7 @@
 @once
     @push('js')
         <script src="{{asset('assets/plugins/custom/datatables/datatables.bundle.js')}}"></script>
-{{--        <script src="{{asset('assets/js/diario/bimestres/bimestres_table.js')}}"></script>--}}
+        <script src="{{asset('assets/js/diario/bimestres/bimestres_table.js')}}"></script>
         <script src="{{asset('assets/js/diario/notas/nota_table.js')}}"></script>
 {{--        <script src="{{asset('assets/js/diario/media/mediabim_table.js')}}"></script>--}}
     @endpush
