@@ -227,11 +227,13 @@ Route::group(['namespace'=>'Diario', 'prefix'=>'diario', 'as'=>'diario.'], funct
         /** Fim Bimestres */
 
         /** Notas */
+
         Route::get('/nota/turma/{turma}/disciplina/{disciplina}/periodo/{periodo}',[NotaController::class,'notas'])->name('notas.turma.disciplina.periodo');
         Route::post('/nota/cadastrar', [NotaController::class, "cadastrar"])->name('nota.cadastrar');
         Route::post('/nota/atualizar', [NotaController::class, "atualizar"])->name('nota.atualizar');
         Route::get('/nota/{id}/deletar', [NotaController::class, "deletar"])->name('nota.deletar');
         Route::get('/nota/{periodo_id}/salvarmedia', [NotaController::class, "salvarmedia"])->name('nota.salvarmedia');
+        Route::get('/nota/periodo/{periodo_id}/abaixodamedia', [NotaController::class, "abaixodamedia"])->name('nota.abaixodamedia');
         /** Fim Notas */
 
         /** Media Bimestral */

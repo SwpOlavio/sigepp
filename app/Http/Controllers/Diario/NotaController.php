@@ -622,6 +622,44 @@ class NotaController extends Controller
         $json = ['salvo'=> $mediaSalva,'msn' => $this->message->success(title:'error', message: 'Erro ao salvar a média.')->render()];
         return response()->json($json);
     }
+
+    public function abaixodamedia(int $periodo_id){ // Falta a turma e a disciplina
+
+        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
+            ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
+            ->where('matriculas.turma_id', 4)
+            ->where('matriculas.escola_id', 2)
+            ->where('matriculas.anoletivo_id', 2)
+            ->orderBy('numero')
+            ->get();
+
+        $notas = Nota::select('notas.nota','notas.aluno_id','tipo_notas.tipo')
+            ->leftJoin('tipo_notas','tipo_notas.id', 'notas.tipo_nota_id')
+            ->where('notas.periodo_id', $periodo_id)
+            ->where('notas.escola_id', 2)
+            ->where('notas.anoletivo_id', 2)
+            ->orderBy('notas.aluno_id')
+            ->get();
+
+        $mediaAnual =  Anoletivo::find(2)->media;
+
+        $listaAlunos = [];
+
+        foreach ($matriculas as $matricula) {
+            $mediaBimestral = new MediaBimestral();
+            $mediaBimestral->aluno_id = $matricula->aluno_id;
+            $notasAluno = $notas->where('aluno_id', $matricula->aluno_id)->where('tipo','!=','Recuperação');
+            $media = $notasAluno->avg('nota');
+            if ($media >= $mediaAnual){
+                $mediaBimestral->status_sigla = "ACM";
+            }else{
+                $mediaBimestral->status_sigla = "ABM";
+            }
+            $listaAlunos[] = $mediaBimestral;
+
+        }
+        return response()->json($listaAlunos);
+    }
     public function popular_tipo_nota(Request $request, TipoNota $notaTipo){
 
         $notaTipo->data = $request->tipo_nota_data;

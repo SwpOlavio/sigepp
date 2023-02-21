@@ -9,6 +9,7 @@ var Nota = (function () {
         url,
         form,
         modal,
+        listaAlunos,
         objetoItem,
         cancelButton,
         tipoNotaInput,
@@ -302,27 +303,15 @@ var Nota = (function () {
                 radio.addEventListener('click', function (){
                     if (radio.checked){
                         form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
-                            input.value = radio.value
+
+                            if (!input.readOnly){
+                                input.value = radio.value
+                            }else{
+                                input.value = ''
+                            }
                         })
                     }
                 })
-
-                // let im = new Inputmask({ mask: ["9", "9.9", "99.9"],  numericInput: true})
-                // im.mask(input);
-                // input.addEventListener('keyup', function (e){
-                //     if (input.value >10){
-                //         input.classList.add("bg-light-danger");
-                //         input.classList.add("text-danger");
-                //         toastr.options = {
-                //             "preventDuplicates": true,
-                //         }
-                //         toastr.error("A nota máxima deve ser 10.0", "Erro" );
-                //     }else{
-                //         input.classList.remove("bg-light-danger");
-                //         input.classList.remove("text-danger");
-                //         toastr.clear()
-                //     }
-                // });
             });
         };
 
@@ -335,12 +324,60 @@ var Nota = (function () {
         span.innerHTML = template
         return $(span);
     }
+
     tipoNotaInput = $("#tipo_nota").select2({
         templateSelection: optionFormat,
         templateResult: optionFormat,
         minimumResultsForSearch: -1
-    });
+    }).on('select2:select', function (e){
 
+        console.log(e.params.data.text)
+        let periodo = document.querySelector('#periodo').value;
+        if (e.params.data.text === "Recuperação") {
+            fetch(BaseUrl + '/diario/nota/periodo/'+periodo+"/abaixodamedia").then(response => response.json())
+                .then(data => {
+                    listaAlunos = data;
+                    form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+
+                        for (let i = 0; i < listaAlunos.length; i++) {
+
+                            if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ABM" && input.dataset.aluno_status === "MTR"){
+
+                                if (input.classList.contains('bg-light-primary')){
+                                    input.classList.remove('bg-light-primary')
+                                }
+                                input.classList.add('bg-light-success')
+                                break
+                            }else if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ACM" && input.dataset.aluno_status === "MTR"){
+                                input.readOnly = !0;
+                                input.value = '';
+                            }
+                        }
+                    })
+                });
+        }
+        else{
+            if (listaAlunos !== undefined){
+                form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+
+                        for (let i = 0; i < listaAlunos.length; i++) {
+
+                            if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ABM" && input.dataset.aluno_status === "MTR"){
+
+                                if (input.classList.contains('bg-light-success')){
+                                    input.classList.remove('bg-light-success')
+                                }
+                                input.classList.add('bg-light-primary')
+                                break
+                            }else if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ACM" && input.dataset.aluno_status === "MTR"){
+                                input.readOnly = !1;
+                            }
+                        }
+                    })
+                listaAlunos = undefined;
+            }
+        }
+    });
 
     return {
         init: function () {
@@ -395,8 +432,6 @@ var Nota = (function () {
         getNotas: function (notas, item){
             bimestreNotas = notas
             objetoItem = item
-
-            console.log(notas)
             listarNotas()
             let radios = document.querySelector('#radios')
             if (!radios.classList.contains('d-none')){

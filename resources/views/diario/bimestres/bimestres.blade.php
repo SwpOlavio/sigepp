@@ -427,27 +427,31 @@
                                 </div >
                                 <!--end::Input group-->
                                 <div class="d-flex justify-content-between flex-nowrap border border-gray-300 p-1" id="radios">
+                                    <div class="form-check form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="radio" value="" name="nota_radio" />
+                                        <label class="form-check-label text-gray-800" for="flexCheckboxLg">
+                                           Limpar
+                                        </label>
+                                    </div>
                                     <div class="form-check form-check-custom form-check-success form-check-solid">
                                         <input class="form-check-input" type="radio" value="7.0" name="nota_radio" />
                                         <label class="form-check-label text-gray-800" for="flexCheckboxLg">
                                             7.0
                                         </label>
                                     </div>
-
                                     <div class="form-check form-check-custom form-check-danger form-check-solid">
                                         <input class="form-check-input" type="radio" value="8.0" name="nota_radio"  />
                                         <label class="form-check-label text-gray-800" for="flexCheckboxSm">
                                             8.0
                                         </label>
                                     </div>
-
                                     <div class="form-check form-check-custom form-check-warning form-check-solid">
                                         <input class="form-check-input" type="radio" value="9.0" name="nota_radio" />
                                         <label class="form-check-label text-gray-800" for="flexRadioLg">
                                             9.0
                                         </label>
                                     </div>
-                                    <div class="form-check form-check-custom form-check-primary form-check-solid">
+                                    <div class="form-check form-check-custom form-check-solid">
                                         <input class="form-check-input" type="radio" value="10.0" name="nota_radio" />
                                         <label class="form-check-label text-gray-800" for="flexRadioLg">
                                             10.0
@@ -491,7 +495,7 @@
                                                     <!--begin::Sales-->
                                                     <div class="text-end">
                                                         <div class="w-60px">
-                                                            <input type="text" id="nota" data-aluno_id="{{ $matricula->aluno_id }}" data-nota_id="0" data-nota-filter="nota"
+                                                            <input type="text" id="nota" data-aluno_status="{{$matricula->status}}" data-aluno_id="{{ $matricula->aluno_id }}" data-nota_id="0" data-nota-filter="nota"
                                                                    class="form-control nota texto form-control-solid text-center text-gray-800 {{ $matricula->status !== "MTR" ? "bg-light-danger":"bg-light-primary"}} "
                                                                     {{ $matricula->status !== "MTR" ? "readonly":""}}
                                                             />
