@@ -283,12 +283,12 @@
                                                             <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
                                                         </div>
                                                         <div class="d-flex align-items-center me-6" id="painel">
-                                                            <a  href="javascript:;" onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                            <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
                                                                 <i class="fa-solid fa-pen fs-6"></i>
-                                                            </a>
-                                                            <a href="javascript:;" data-salvo="{{$mediasSalvas->get(0)['salvo']}}" onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class=" btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                                            </button>
+                                                            <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
                                                                 <i class="fa-solid fa-trash fs-6"></i>
-                                                            </a>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <!--end::Section-->
@@ -680,7 +680,7 @@
                                     <table class="table align-middle gs-0 gy-4">
                                         <!--begin::Table head-->
                                         <thead>
-                                        <tr class="fw-bold text-muted bg-light" id="head_tr_tipos">
+                                        <tr class="fw-bold text-gray-800 bg-light" id="head_tr_tipos">
 
                                         </tr>
                                         </thead>
@@ -696,9 +696,27 @@
                         </div>
                     </div>
                     <!--end::Modal body-->
-                    <div class="modal-footer justify-content-start">
-                        <div class="ms-12" id="total_alunos"><span class="badge badge-light-info text-info">20</span></div>
-                        <div class="" id="total_alunos"> alunos ativos</div>
+                    <div class="modal-footer justify-content-between">
+                        <div>
+                            <div>
+                                <span class="badge badge-light-info text-info badge-lg">{{ count($matriculas)}}</span>
+                                <span class="text-gray-800"> alunos ativos</span>
+                            </div>
+                            <div>
+                                <span class="badge badge-light-success text-success badge-lg fs-7">ACM</span>
+                                <span class="text-gray-800"> Acima ou igual a média</span>
+                            </div>
+                            <div>
+                                <span class="badge badge-light-danger text-danger badge-lg fs-7">ABM</span>
+                                <span class="text-gray-800"> Abaixo da média</span>
+                            </div>
+                        </div>
+
+                        <div>
+
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+
                     </div>
                 </div>
                 <!--end::Modal content-->

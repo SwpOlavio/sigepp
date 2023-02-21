@@ -213,6 +213,8 @@ class BimestreController extends Controller
             ->where('matriculas.anoletivo_id', 2)
             ->where('media_bimestrals.periodo_id', $periodo)->get();
 
+       // dd($mediaBimestrals->count());
+
         $resultado = [
             'tipos'=> $tipoNotas,
             'medias'=> $mediaBimestrals,

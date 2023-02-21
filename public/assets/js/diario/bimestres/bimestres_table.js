@@ -94,6 +94,8 @@ var Bimestre = (function () {
                                     }).then(function () {
                                         form.querySelector("[data-media-filter='mediabim']").disabled = !1
                                         form.querySelector("[data-media-filter='notabim']").disabled = !1
+                                        formB1.querySelectorAll(".editar").forEach((el) => el.disabled = !1)
+                                        formB1.querySelectorAll(".remover").forEach((el) => el.disabled = !1)
                                         el.disabled = !0;
                                     })
                                 });
@@ -118,10 +120,9 @@ var Bimestre = (function () {
                             let tipos = '<th class="ps-4 min-w-300px rounded-start">Nome</th>';
 
                             data.tipos.forEach(function (item){
-                                console.log(item.tipo)
                                 tipos += `<th class="min-w-50px text-center">${item.tipo}</th>`
                             })
-                            tipos += `<th class="min-w-50px text-center">Média</th>
+                            tipos += `<th class="w-50px text-center">Média</th>
                                    <th class="min-w-50px text-center">Status</th>`;
 
                             let thead_tipos = modalElemento.querySelector('#head_tr_tipos')
@@ -129,6 +130,7 @@ var Bimestre = (function () {
                             thead_tipos.insertAdjacentHTML('beforeend', tipos)
 
                             let lista_medias = modalElemento.querySelector('#notas_alunos')
+                            lista_medias.innerHTML = "";
 
                             let lista = []
                             let numNotas = data.tipos.length
@@ -174,10 +176,13 @@ var Bimestre = (function () {
                                     })
 
                                  html += `<td class="text-center">
-                                                <a href="javascript:;" class="text-dark fw-bold text-hover-primary d-block mb-1 texto">${item.media}</a>
+                                               <div class="w-50px text-center">
+                                                    <input readonly type="text" class="form-control texto form-control-solid text-center text-gray-800 bg-light-primary" value="${item.media}"/>
+                                              </div>
                                             </td>
                                             <td class="text-center">
-                                                <a href="javascript:;" class="badge ${item.status_sigla === "ACM" ? "badge-light-success text-success":"badge-light-danger text-danger"}  fw-bold text-hover-primary d-block mb-1 ">${item.status_sigla}</a>
+                                                <a href="javascript:;" class="badge ${item.status_sigla === "ACM" ?
+                                     "badge-light-success text-success":"badge-light-danger text-danger"}  fw-bold text-hover-white mb-1 ">${item.status_sigla}</a>
                                             </td>
                                         </tr>`;
 

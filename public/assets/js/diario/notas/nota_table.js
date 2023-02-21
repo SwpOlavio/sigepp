@@ -149,7 +149,7 @@ var Nota = (function () {
                                             <a  href="javascript:;" onclick='Nota.getNotas(${listaBimestre}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
                                                 <i class="fa-solid fa-pen fs-6"></i>
                                             </a>
-                                            <a href="javascript:;" data-salvo="" onclick='Nota.deletar(${tipo_nota_id}, this.parentNode.parentNode.parentNode)' class=" btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                            <a href="javascript:;" data-salvo="" onclick='Nota.deletar(${tipo_nota_id}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
                                                 <i class="fa-solid fa-trash fs-6"></i>
                                             </a>
                                         </div>
@@ -234,6 +234,9 @@ var Nota = (function () {
                                                 btn.removeAttribute("data-kt-indicator", "on")
                                                 formB1.querySelector("[data-btn-filter='limparmediabim']").disabled = !1
                                                 formB1.querySelector("[data-media-filter='notabim']").disabled = !0
+                                                formB1.querySelectorAll(".editar").forEach((el) => el.disabled = !0)
+                                                formB1.querySelectorAll(".remover").forEach((el) => el.disabled = !0)
+
                                             })
                                         });
                                 }else{
@@ -243,25 +246,8 @@ var Nota = (function () {
                             });
                 });
             });
-
-            /*
-            fetch(BaseUrl + '/diario/nota/'+periodo_id+"/salvarmedia").then(response => response.json())
-                .then(data => {
-                    console.log(data)
-                    Swal.fire({
-                        text: data.data.message,
-                        icon: data.data.title, buttonsStyling: !1,
-                        confirmButtonText: "Ok, entendi!",
-                        customClass: { confirmButton: "btn fw-bold btn-primary" }
-                    }).then(function () {
-
-                    })
-                });
-
-            */
         },
         listarNotas = () => {
-
 
 
             $('.modal-alunos-notas').animate({scrollTop:0}, 'slow');
