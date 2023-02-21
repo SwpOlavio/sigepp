@@ -166,18 +166,23 @@ var Bimestre = (function () {
                                                         </span>
                                                     </div>
                                                     <div class="d-flex justify-content-start flex-column align-items-start">
-                                                        <a href="#" class="text-dark fw-bold text-hover-primary mb-1 texto">${item.nome}</a>
+                                                        <a href="#" class="fw-bold text-hover-primary mb-1 texto ${item.status_aluno === "MTR" ? "text-dark ":"text-decoration-line-through text-danger"}">${item.nome}</a>
+                                                        <div>
                                                         <span class="text-muted fw-semibold fs-7">Numero: ${item.numero}</span>
+                                                        <span class="text-muted fw-semibold fs-7"> - Status: ${item.status_aluno}</span>
+                                                        </div>
+</div>
+
                                                     </div>
                                                 </div>
                                             </td>`;
-                                    data.tipos.forEach(function (item,i){
+                                    data.tipos.forEach(function (item2,i){
                                         html += `<th class="min-w-50px text-center">${listaNotas[i]}</th>`
                                     })
 
                                  html += `<td class="text-center">
                                                <div class="w-50px text-center">
-                                                    <input readonly type="text" class="form-control texto form-control-solid text-center text-gray-800 bg-light-primary" value="${item.media}"/>
+                                                    <input readonly type="text" class="form-control texto form-control-solid text-center text-gray-800  ${item.status_aluno === "MTR" ? "bg-light-primary":"bg-light-danger"} " value="${item.media}"/>
                                               </div>
                                             </td>
                                             <td class="text-center">

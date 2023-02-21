@@ -474,15 +474,13 @@
                                                     <!--end::Avatar-->
                                                     <!--begin::Details-->
                                                     <div class="ms-6">
-
                                                         <!--begin::Name-->
-                                                        <div class="d-flex align-items-center texto fw-bold text-dark text-hover-primary ">
+                                                        <div class="d-flex align-items-center texto fw-bold text-hover-primary {{ $matricula->status !== "MTR" ? "text-decoration-line-through text-danger":"text-dark"}} ">
                                                             {{$matricula->nome}}
-                                                            {{--                                                    <span class="badge badge-light fs-8 fw-semibold ms-2">Marketing Analytic</span>--}}
                                                         </div>
-                                                        <!--end::Name-->
-                                                        <!--begin::Email-->
-                                                        <div class="fw-semibold text-muted">Número: {{ $matricula->numero > 0 ? $matricula->numero : '' }}</div>
+                                                        <span class="fw-semibold text-muted ">Número: {{ $matricula->numero > 0 ? $matricula->numero : '' }}</span>
+                                                        <span class="fw-semibold text-muted"> - Id: {{ $matricula->aluno_id }}</span>
+                                                        <span class="fw-semibold text-muted"> - Status: {{ $matricula->status }}</span>
                                                         <!--end::Email-->
                                                     </div>
                                                     <!--end::Details-->
@@ -493,7 +491,10 @@
                                                     <!--begin::Sales-->
                                                     <div class="text-end">
                                                         <div class="w-60px">
-                                                            <input type="text" id="nota" data-aluno_id="{{ $matricula->aluno_id }}" data-nota_id="0" data-nota-filter="nota" class="form-control texto form-control-solid text-center text-gray-800 bg-light-primary nota"/>
+                                                            <input type="text" id="nota" data-aluno_id="{{ $matricula->aluno_id }}" data-nota_id="0" data-nota-filter="nota"
+                                                                   class="form-control nota texto form-control-solid text-center text-gray-800 {{ $matricula->status !== "MTR" ? "bg-light-danger":"bg-light-primary"}} "
+                                                                    {{ $matricula->status !== "MTR" ? "readonly":""}}
+                                                            />
                                                         </div>
                                                     </div>
                                                     <!--end::Sales-->

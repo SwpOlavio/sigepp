@@ -146,12 +146,12 @@ var Nota = (function () {
                                             <span class="text-gray-700 fw-bold d-block fs-7">${data}</span>
                                         </div>
                                         <div class="d-flex align-items-center me-6" id="painel">
-                                            <a  href="javascript:;" onclick='Nota.getNotas(${listaBimestre}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                            <button type="button" onclick='Nota.getNotas(${listaBimestre}, this.parentNode.parentNode.parentNode)' class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
                                                 <i class="fa-solid fa-pen fs-6"></i>
-                                            </a>
-                                            <a href="javascript:;" data-salvo="" onclick='Nota.deletar(${tipo_nota_id}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                            </button>
+                                            <button type="button" onclick='Nota.deletar(${tipo_nota_id}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
                                                 <i class="fa-solid fa-trash fs-6"></i>
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>`

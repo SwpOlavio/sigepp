@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 
 use App\Models\Admin\Disciplina;
+use App\Models\Admin\Transferencia;
 use App\Models\Admin\Turma;
 use App\Models\Admin\TurmaProfessor;
 use App\Models\Diario\Anoletivo;
@@ -15,11 +16,13 @@ use App\Models\Diario\Nota;
 use App\Models\Diario\PeriodoTurma;
 use App\Models\Diario\TipoNota;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BimestreController extends Controller
 {
     public function listar(Turma $turma, Disciplina $disciplina)
     {
+
 
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
             ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
@@ -45,31 +48,31 @@ class BimestreController extends Controller
 
         $matriculas_lista = [];
         foreach ($matriculas as $matricula){
+            $status = "MTR";
+            $transExterna = Transferencia::
+                where('aluno_id', $matricula->aluno_id)
+                ->where('escola_id', 2)
+                ->where('anoletivo_id', 2)->first();
+
+            if (!empty($transExterna)){
+                $status = $transExterna->status;
+            }
+
             $temp = (object)[
                 'id' => $matricula->id,
                 'aluno_id' => $matricula->aluno_id,
-                'numero' => $matricula->numero,
+                'numero' => Str::padLeft($matricula->numero,2,'0'),
                 'nome' => $matricula->nome,
                 'serie' => $matricula->serie,
                 'inep' => $matricula->aluno_inep,
                 'data' => (new \DateTime($matricula->data))->format('d/m/Y'),
-                'status' => 'MTR',
+                'status' => $status,
                 'turno' => $turma->turno,
                 'falta' => $faltas->falta ?? 0,
             ];
 
             $matriculas_lista[] = $temp;
         }
-
-//        foreach ($matriculas as $matricula){
-//            $notas = Nota::where('turma_id', $turma->id)
-//                ->where('disciplina_id', $disciplina->id)
-//                ->where('escola_id', 2)
-//                ->where('anoletivo_id', 2)
-//                ->where('professor_id', 12)
-//                ->where('aluno_id', $matricula->aluno_id)
-//                ->delete();
-//        }
 
         // Listar os bimestres ------------------------------------------------------------------
 
@@ -215,9 +218,23 @@ class BimestreController extends Controller
 
        // dd($mediaBimestrals->count());
 
+
+        $mediasBim = $mediaBimestrals->map(function ($media) {
+
+            $status = "MTR";
+            $transExterna = Transferencia::where('aluno_id', $media->aluno_id)->where('escola_id', 2)->where('anoletivo_id', 2)->first();
+
+            if (!empty($transExterna)){
+                $status = $transExterna->status ?? '';
+            }
+            $media->status_aluno = $status;
+            $media->numero = Str::padLeft($media->numero,2,'0');
+            return $media;
+        });
+
         $resultado = [
             'tipos'=> $tipoNotas,
-            'medias'=> $mediaBimestrals,
+            'medias'=> $mediasBim,
         ];
 
         return response()->json($resultado);
