@@ -452,16 +452,32 @@ class NotaController extends Controller
     }
     public function cadastrar(Request $request){
 
+           $tipoNota = TipoNota::where('periodo_id', $request->periodo_id)->get();
+            if ($tipoNota->count() === 0){
+                if ( $request->tipo_nota_tipo === "Recuperação"){
+                    $msg = $this->message->error(title:'Error', message:'Oops! A primeira avaliação não pode ser uma recuperação.')->render();
+                    $json = ['resposta' => false,'msn' => $msg];
+                    return response()->json($json);
+                }
+            }else{
+                $resultado = $tipoNota->first(function ($item){
+                    return $item->tipo === "Recuperação";
+                });
+                if ($resultado){
+                    $msg = $this->message->error(title:'Error', message:'Oops! Você não poderá cadastrar uma nova avaliação, visto que, há uma recuperação cadastrada.')->render();
+                    $json = ['resposta' => false,'msn' => $msg];
+                    return response()->json($json);
+                }
+            }
             $tipoNota = new TipoNota();
             $tipoNota = $this->popular_tipo_nota($request, $tipoNota);
 
             if ($tipoNota->id > 0){
                 $notas = json_decode($request->input('notas'));
 
-
                 foreach ($notas as $resultado){
                     $nota = new Nota();
-                    $nota->nota = $resultado->nota;
+                    $nota->nota = $resultado->nota >= 0 ? $resultado->nota : null;
                     $nota->aluno_id = $resultado->alunoId;
                     $nota->tipo_nota_id = $tipoNota->id;
                     $nota->professor_id = 12;
@@ -473,17 +489,17 @@ class NotaController extends Controller
                     $nota->save();
                 }
                 $listanotas = Nota::leftJoin('tipo_notas', "tipo_notas.id",'=', 'notas.tipo_nota_id')
-                    ->select('notas.id','notas.nota','tipo_notas.data','tipo_notas.tipo')
+                    ->select('notas.id','notas.aluno_id','notas.nota','tipo_notas.data','tipo_notas.tipo')
                     ->where('notas.tipo_nota_id', $tipoNota->id)
                     ->where('notas.periodo_id', $request->periodo_id)
                     ->get();
 
-                $msg = $this->message->success(title:'Parabéns', message:'Notas cadastrada com sucesso.');
+                $msg = $this->message->success(title:'Parabéns', message:'Notas cadastrada com sucesso.')->render();
                 $json = ['resposta' => true,'periodo_id' => $request->periodo_id,'data'=> (new \DateTime($request->tipo_nota_data))->format('d/m/Y'),
                     'tipo'=> $request->tipo_nota_tipo, 'tipo_nota_id' => $tipoNota->id, 'notasAlunos'=> $listanotas,'msn' => $msg];
                 return response()->json($json);
             }
-            $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
+            $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.')->render();
             $json = ['resposta' => false,'msn' => $msg];
             return response()->json($json);
     }
@@ -506,12 +522,12 @@ class NotaController extends Controller
                 ->where('notas.periodo_id', $request->periodo_id)
                 ->get();
 
-            $msg = $this->message->success(title:'Parabéns', message:'Notas atualizadas com sucesso.');
+            $msg = $this->message->success(title:'Parabéns', message:'Notas atualizadas com sucesso.')->render();
             $json = ['resposta' => true,'periodo_id' => $request->periodo_id,'data'=> (new \DateTime($request->tipo_nota_data))->format('d/m/Y'),
                 'tipo'=> $request->tipo_nota_tipo, 'tipo_nota_id' => $tipoNota->id,'notasAlunos'=> $listanotas,'msn' => $msg];
             return response()->json($json);
         }
-        $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.');
+        $msg = $this->message->error(title:'Error', message:'Oops! Houve algum problema.')->render();
         $json = ['resposta' => false,'msn' => $msg];
         return response()->json($json);
 
@@ -535,7 +551,7 @@ class NotaController extends Controller
     }
     public function salvarmedia(int $periodo_id){ // Falta a turma e a disciplina
 
-        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.aluno_nome','alunos.aluno_inep')
+        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
             ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
             ->where('matriculas.turma_id', 4)
             ->where('matriculas.escola_id', 2)
@@ -556,10 +572,8 @@ class NotaController extends Controller
 
         foreach ($matriculas as $matricula) {
             $mediaBimestral = new MediaBimestral();
-            $notasAluno = $notas->where('aluno_id', $matricula->aluno_id);
+            $notasAluno = $notas->where('aluno_id', $matricula->aluno_id)->where('tipo','!=','Recuperação');
             $media = $notasAluno->avg('nota');
-            $mediaBimestral->media = $this->formatar_media($media);
-
             if ($media >= $mediaAnual){
                 $mediaBimestral->status = "NAMEDIA";
                 $mediaBimestral->status_sigla = "ACM";
@@ -575,9 +589,13 @@ class NotaController extends Controller
             $mediaBimestral->escola_id = 2;
             $mediaBimestral->turma_id = 4;
             $mediaBimestral->disciplina_id = 9;
-            foreach ($notasAluno as $nota) {
-                if ($nota->tipo === "Recuperação"){
+            $mediaBimestral->media = $this->formatar_media($media);
+
+            $notasAlunos = $notas->where('aluno_id', $matricula->aluno_id);
+            foreach ($notasAlunos as $nota) {
+                if ($nota->tipo === "Recuperação" && $nota->nota !== null){
                     $mediaBimestral->recuperacao = $nota->nota;
+                    $mediaBimestral->media = $nota->nota;
                 }else{
                     if (empty($mediaBimestral->nota1)){
                         $mediaBimestral->nota1 = $nota->nota;

@@ -55,10 +55,11 @@ var Nota = (function () {
             let formData = new FormData()
             let dadosInput = []
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+
                 let dado = {
                     alunoId: Number(input.dataset.aluno_id),
                     nota_id: Number(input.dataset.nota_id),
-                    nota: Number(input.value),
+                    nota: input.value !== "" ? Number(input.value) : "",
                 }
                 dadosInput.push(dado)
             });
@@ -78,6 +79,7 @@ var Nota = (function () {
                 url = BaseUrl +  "/diario/nota/cadastrar"
             }
 
+
             fetch(url,{
                 method: 'POST',
                 dataType: 'json',
@@ -87,6 +89,7 @@ var Nota = (function () {
                 body: formData
             }).then(response => response.json()).then(resultado => {
                 //document.querySelector('#pedido_id').value = data.pedidoId
+                console.log(resultado)
                 if (!resultado.resposta){
                     Swal.fire({
                         text: resultado.msn.message,
@@ -96,6 +99,10 @@ var Nota = (function () {
                         customClass: {
                             confirmButton: "btn btn-primary"
                         }
+                    }).then(function (){
+                        btnSalvar.removeAttribute("data-kt-indicator");
+                        btnSalvar.disabled = !1
+
                     })
                     return
                 }
@@ -103,7 +110,8 @@ var Nota = (function () {
                 let listaBimestre = JSON.stringify(resultado)
                 let data = resultado.data.split('-').reverse().join('/')
                 let tipo = resultado.tipo
-                console.log(resultado)
+                let tipo_nota_id = resultado.tipo_nota_id
+
                 btnSalvar.removeAttribute("data-kt-indicator");
                 btnSalvar.disabled = !1
                 Swal.fire({
@@ -118,6 +126,7 @@ var Nota = (function () {
 
                     modal.hide()
                     form.reset()
+
 
                     let html = `
                      <div class="d-flex align-items-sm-center mb-7 item">
@@ -140,7 +149,7 @@ var Nota = (function () {
                                             <a  href="javascript:;" onclick='Nota.getNotas(${listaBimestre}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
                                                 <i class="fa-solid fa-pen fs-6"></i>
                                             </a>
-                                            <a href="javascript:;" class="deletar btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                            <a href="javascript:;" data-salvo="" onclick='Nota.deletar(${tipo_nota_id}, this.parentNode.parentNode.parentNode)' class=" btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
                                                 <i class="fa-solid fa-trash fs-6"></i>
                                             </a>
                                         </div>
@@ -149,10 +158,11 @@ var Nota = (function () {
                     if (objetoItem !== undefined) {
                         objetoItem.insertAdjacentHTML('afterend', html)
                         objetoItem.remove()
+                        objetoItem = undefined
                         return
                     }
                     let b =  document.querySelector('#b1')
-                    b.insertAdjacentHTML('afterend', html)
+                    b.insertAdjacentHTML('beforeend', html)
 
                 })
 
@@ -176,7 +186,7 @@ var Nota = (function () {
                     if (t.value) {
                         fetch(BaseUrl + '/diario/nota/'+id+"/deletar").then(response => response.json())
                             .then(data => {
-                                console.log(data)
+
                                 Swal.fire({
                                     text: data.data.message,
                                     icon: data.data.title, buttonsStyling: !1,
@@ -190,7 +200,6 @@ var Nota = (function () {
                 });
         },
         salvarMedia = () => {
-
             formB1.querySelectorAll('[data-media-filter="mediabim"]').forEach((btn) => {
                 btn.addEventListener('click', function (e){
                     e.preventDefault()
@@ -204,7 +213,7 @@ var Nota = (function () {
                             buttonsStyling: !1,
                             confirmButtonText: "Sim, salvar!",
                             cancelButtonText: "Não, cancelar",
-                            customClass: { confirmButton: "btn fw-bold btn-danger", cancelButton: "btn fw-bold btn-active-light-primary" },
+                            customClass: { confirmButton: "btn fw-bold btn-primary", cancelButton: "btn fw-bold btn-active-light-primary" },
                         })
                             .then(function (t) {
 
@@ -253,6 +262,8 @@ var Nota = (function () {
         },
         listarNotas = () => {
 
+
+
             $('.modal-alunos-notas').animate({scrollTop:0}, 'slow');
 
             document.querySelector('#periodo').value = bimestreNotas.periodo_id
@@ -260,7 +271,7 @@ var Nota = (function () {
             periodoAtual = bimestreNotas.periodo_id
 
             tipoNotaInput.val(bimestreNotas.tipo).trigger('change')
-            console.log("data: " + bimestreNotas.data)
+            //console.log("data: " + bimestreNotas.data)
             dataInput.setDate(bimestreNotas.data)
 
             let listaNotas =  bimestreNotas.notasAlunos;
@@ -384,13 +395,14 @@ var Nota = (function () {
             notaRadio()
             salvarMedia()
         },
-        getPeriodo: function (periodo){
-            document.querySelector('#periodo').value = periodo
-            document.querySelector('#tipo_nota_id').value = 0
-            let radios = document.querySelector('#radios')
-            if (radios.classList.contains("d-none")){
-                radios.classList.remove('d-none')
-            }
+        getPeriodo: function (objeto){
+                document.querySelector('#periodo').value = objeto.dataset.periodo_id
+                document.querySelector('#tipo_nota_id').value = 0
+                let radios = document.querySelector('#radios')
+                if (radios.classList.contains("d-none")){
+                    radios.classList.remove('d-none')
+                }
+
         },
         getNotas: function (notas, item){
             bimestreNotas = notas

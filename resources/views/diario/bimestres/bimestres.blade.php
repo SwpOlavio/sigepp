@@ -244,8 +244,8 @@
                                 </h3>
                                 <div class="card-toolbar">
                                     <!--begin:: Se o primeiro bimestre está salvo-->
-                                        <button {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}}  class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
-                                                onclick="Nota.getPeriodo({{$periodos[0]->id}})" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button>
+                                        <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} data-periodo_id="{{$periodos[0]->id}}"  class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
+                                                onclick="Nota.getPeriodo(this)" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button >
 
                                         <button {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[0]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
                                             <span class="indicator-label">Média</span>
@@ -283,7 +283,7 @@
                                                             <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
                                                         </div>
                                                         <div class="d-flex align-items-center me-6" id="painel">
-                                                            <a  href="javascript:;" onclick='Nota.getNotas({{ collect($bimestre) }}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                            <a  href="javascript:;" onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
                                                                 <i class="fa-solid fa-pen fs-6"></i>
                                                             </a>
                                                             <a href="javascript:;" data-salvo="{{$mediasSalvas->get(0)['salvo']}}" onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class=" btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
@@ -298,12 +298,12 @@
                                         @endif
                                     </div>
                                 <div>
-                                <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções {{$mediasSalvas->get(0)['salvo']}}</span></div>
+                                <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
                                 <div class="separator separator-dashed separator-content  mt-12 mb-5">
                                     <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
                                     <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
                                     <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
-                                    <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
+                                    <button class="btn btn-icon me-5" data-btn-filter="visualizarmediaBim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
                                     <button class="btn btn-icon" {{!$mediasSalvas->get(0)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
                                 </div>
                                 </div>
@@ -422,12 +422,11 @@
                                                 </svg>
                                                 </span>'>Conselho</option>
                                         </select>
-
                                     </div>
                                     <!--end::Col-->
                                 </div >
                                 <!--end::Input group-->
-                                <div class="d-flex justify-content-between flex-nowrap" id="radios">
+                                <div class="d-flex justify-content-between flex-nowrap border border-gray-300 p-1" id="radios">
                                     <div class="form-check form-check-custom form-check-success form-check-solid">
                                         <input class="form-check-input" type="radio" value="7.0" name="nota_radio" />
                                         <label class="form-check-label text-gray-800" for="flexCheckboxLg">
@@ -630,6 +629,76 @@
                             <span class="indicator-progress">Aguarde...
 									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
+                    </div>
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+
+        <div class="modal fade " id="kt_modal_media_visualizar" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-xl modal-fullscreen2">
+                <!--begin::Modal content-->
+                <div class="modal-content">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end" >
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                            <span class="svg-icon svg-icon-1">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+									<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+								</svg>
+							</span>
+                            <!--end::Svg Icon-->
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal body-->
+                    <div class="modal-body mx-xl-10 pt-0 pb-0">
+                        <div>
+                            <!--begin::Heading-->
+                            <div class="text-center mb-1">
+                                <!--begin::Title-->
+                                <h1 class="mb-2">Notas do bimestre</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="d-flex justify-content-center">
+                                    <div class="text-muted fw-semibold fs-5">Turma B,</div>
+                                    <div class="text-muted fw-semibold fs-5">Matematica,</div>
+                                    <div class="text-muted fw-semibold fs-5">Matutino,</div>
+                                    <div class="text-primary fw-bold fs-5">1° Bimestre</div>
+                                </div>
+
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            <div class="modal-alunos-notas me-n7 pe-7">
+                                <div class="table-responsive">
+                                    <table class="table align-middle gs-0 gy-4">
+                                        <!--begin::Table head-->
+                                        <thead>
+                                        <tr class="fw-bold text-muted bg-light" id="head_tr_tipos">
+
+                                        </tr>
+                                        </thead>
+                                        <!--end::Table head-->
+                                        <!--begin::Table body-->
+                                        <tbody id="notas_alunos">
+                                        </tbody>
+                                        <!--end::Table body-->
+                                    </table>
+                                </div>
+                            </div>
+                            <!--end::Notice-->
+                        </div>
+                    </div>
+                    <!--end::Modal body-->
+                    <div class="modal-footer justify-content-start">
+                        <div class="ms-12" id="total_alunos"><span class="badge badge-light-info text-info">20</span></div>
+                        <div class="" id="total_alunos"> alunos ativos</div>
                     </div>
                 </div>
                 <!--end::Modal content-->

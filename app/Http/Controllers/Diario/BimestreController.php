@@ -20,7 +20,8 @@ class BimestreController extends Controller
 {
     public function listar(Turma $turma, Disciplina $disciplina)
     {
-        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.aluno_nome','alunos.aluno_inep')
+
+        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
             ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
             ->where('matriculas.turma_id', 4)
             ->where('matriculas.escola_id', 2)
@@ -48,7 +49,7 @@ class BimestreController extends Controller
                 'id' => $matricula->id,
                 'aluno_id' => $matricula->aluno_id,
                 'numero' => $matricula->numero,
-                'nome' => $matricula->aluno_nome,
+                'nome' => $matricula->nome,
                 'serie' => $matricula->serie,
                 'inep' => $matricula->aluno_inep,
                 'data' => (new \DateTime($matricula->data))->format('d/m/Y'),
@@ -198,5 +199,25 @@ class BimestreController extends Controller
         }
         $json['data'] = $this->message->error(title:'error', message: 'Erro ao fechar o bimestre.')->render();
         return response()->json($json);
+    }
+
+    public function visualizarmediaBim(int $periodo){
+
+        $tipoNotas = TipoNota::where('periodo_id', $periodo)->orderBy('id','asc')->get();
+        $mediaBimestrals = MediaBimestral::leftjoin('alunos', 'alunos.id','=','media_bimestrals.aluno_id')
+            ->leftjoin('matriculas', 'matriculas.aluno_id','=','media_bimestrals.aluno_id')
+            ->select('media_bimestrals.*', 'alunos.nome', 'matriculas.numero')
+            ->orderBy('matriculas.numero', 'desc')
+            ->where('matriculas.turma_id', 4)
+            ->where('matriculas.escola_id', 2)
+            ->where('matriculas.anoletivo_id', 2)
+            ->where('media_bimestrals.periodo_id', $periodo)->get();
+
+        $resultado = [
+            'tipos'=> $tipoNotas,
+            'medias'=> $mediaBimestrals,
+        ];
+
+        return response()->json($resultado);
     }
 }

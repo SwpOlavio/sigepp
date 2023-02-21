@@ -219,6 +219,7 @@ Route::group(['namespace'=>'Diario', 'prefix'=>'diario', 'as'=>'diario.'], funct
 
         /** Bimestres */
         Route::get('/bimestres/limparmediaBim/periodo/{periodo}', [BimestreController::class, "limparmediaBim"])->name('bimestres.limparmediaBim.periodo');
+        Route::get('/bimestres/visualizarmediaBim/periodo/{periodo}', [BimestreController::class, "visualizarmediaBim"])->name('bimestres.visualizarmediaBim.periodo');
         Route::get('/bimestres/turma/{turma}/disciplina/{disciplina}/listar', [BimestreController::class, "listar"])->name('bimestres.turma.disciplina');
 
         Route::get('/bimestres/{tipoNota}/deletar', [BimestreController::class,'destroy'])->name('bimestres.destroy');
