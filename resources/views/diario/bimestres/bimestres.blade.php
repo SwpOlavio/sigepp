@@ -353,11 +353,11 @@
                             <input type="hidden" class="link-primary fw-bold" id="tipo_nota_id" value="0"/>
                             <input type="hidden" id="medias_salvas"  value="{{$mediasSalvas ? $mediasSalvas : 0}}"/>
                         </div>
-                        <form  id="formulario-notas" method="post" >
+                        <form  id="formulario-notas" method="post">
                             <!--begin::Heading-->
                             <div class="text-center mb-1">
                                 <!--begin::Title-->
-                                <h1 class="mb-2">Cadastrar notas</h1>
+                                <h1 class="mb-2" id="titulo-notas">Cadastrar notas</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
                                 <div class="d-flex justify-content-center">

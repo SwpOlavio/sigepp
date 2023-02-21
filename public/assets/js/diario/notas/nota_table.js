@@ -158,11 +158,11 @@ var Nota = (function () {
                     if (objetoItem !== undefined) {
                         objetoItem.insertAdjacentHTML('afterend', html)
                         objetoItem.remove()
-                        objetoItem = undefined
-                        return
+                    }else{
+                        let b =  document.querySelector('#b1')
+                        b.insertAdjacentHTML('beforeend', html)
                     }
-                    let b =  document.querySelector('#b1')
-                    b.insertAdjacentHTML('beforeend', html)
+                    objetoItem = undefined
 
                 })
 
@@ -266,6 +266,7 @@ var Nota = (function () {
 
             $('.modal-alunos-notas').animate({scrollTop:0}, 'slow');
 
+            document.querySelector('#titulo-notas').innerText = "Editar notas"
             document.querySelector('#periodo').value = bimestreNotas.periodo_id
             document.querySelector('#tipo_nota_id').value = bimestreNotas.tipo_nota_id
             periodoAtual = bimestreNotas.periodo_id
@@ -281,7 +282,7 @@ var Nota = (function () {
                 for (let i = 0; i < listaNotas.length; i++) {
 
                     if (Number(listaNotas[i].aluno_id) === Number(input.dataset.aluno_id)){
-                        input.value = listaNotas[i].nota
+                        input.value = listaNotas[i].nota ?? ""
                         input.dataset.nota_id = listaNotas[i].id
                         break
                     }
@@ -369,6 +370,7 @@ var Nota = (function () {
             form = document.querySelector("#formulario-notas")
 
             modalNota.addEventListener('hidden.bs.modal', function (event) {
+                document.querySelector('#titulo-notas').innerText = "Cadastrar notas"
                 document.querySelector('#tipo_nota_id').value = 0
                 document.querySelector('#periodo').value = 0
                 tipoNotaInput.val("Trabalho").trigger('change')
@@ -407,6 +409,8 @@ var Nota = (function () {
         getNotas: function (notas, item){
             bimestreNotas = notas
             objetoItem = item
+
+            console.log(notas)
             listarNotas()
             let radios = document.querySelector('#radios')
             if (!radios.classList.contains('d-none')){

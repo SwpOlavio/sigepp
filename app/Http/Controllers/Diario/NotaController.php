@@ -477,7 +477,7 @@ class NotaController extends Controller
 
                 foreach ($notas as $resultado){
                     $nota = new Nota();
-                    $nota->nota = $resultado->nota >= 0 ? $resultado->nota : null;
+                    $nota->nota = $resultado->nota !== '' ? $resultado->nota : null;
                     $nota->aluno_id = $resultado->alunoId;
                     $nota->tipo_nota_id = $tipoNota->id;
                     $nota->professor_id = 12;
@@ -513,7 +513,7 @@ class NotaController extends Controller
             $notas = json_decode($request->input('notas'));
             foreach ($notas as $resultado){
                 $nota = Nota::find($resultado->nota_id);
-                $nota->nota = $resultado->nota;
+                $nota->nota =  $resultado->nota !== '' ? $resultado->nota : null;
                 $nota->save();
             }
             $listanotas = Nota::leftJoin('tipo_notas', "tipo_notas.id",'=', 'notas.tipo_nota_id')
