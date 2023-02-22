@@ -60,7 +60,7 @@ var Nota = (function () {
                 let dado = {
                     alunoId: Number(input.dataset.aluno_id),
                     nota_id: Number(input.dataset.nota_id),
-                    nota: input.value !== "" ? Number(input.value) : "",
+                    nota: input.value !== "" ? Number(input.value.replace(",",".")) : "",
                 }
                 dadosInput.push(dado)
             });
@@ -142,12 +142,16 @@ var Nota = (function () {
                                  </span>
                                   </div>
                                     <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+
                                         <div class="flex-grow-1 me-2">
                                             <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">${tipo}</a>
                                             <span class="text-gray-700 fw-bold d-block fs-7">${data}</span>
                                         </div>
-                                        <div class="d-flex align-items-center me-6" id="painel">
-                                            <button type="button" onclick='Nota.getNotas(${listaBimestre}, this.parentNode.parentNode.parentNode)' class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-6" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                        <div class="d-flex align-items-center me-1" id="painel">
+                                             <a target="_blank" href="javascript:;"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4">
+                                                <i class="fa-solid fa-download fs-6"></i>
+                                            </a>
+                                            <button type="button" onclick='Nota.getNotas(${listaBimestre}, this.parentNode.parentNode.parentNode)' class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
                                                 <i class="fa-solid fa-pen fs-6"></i>
                                             </button>
                                             <button type="button" onclick='Nota.deletar(${tipo_nota_id}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
@@ -189,12 +193,15 @@ var Nota = (function () {
                             .then(data => {
 
                                 Swal.fire({
-                                    text: data.data.message,
-                                    icon: data.data.title, buttonsStyling: !1,
+                                    text: data.mensagem.message,
+                                    icon: data.mensagem.title, buttonsStyling: !1,
                                     confirmButtonText: "Ok, entendi!",
                                     customClass: { confirmButton: "btn fw-bold btn-primary" }
                                 }).then(function () {
-                                    objeto.remove()
+                                    if (data.resposta === 1){
+                                        objetoItem = undefined
+                                        objeto.remove()
+                                    }
                                 })
                             });
                     }
@@ -280,10 +287,10 @@ var Nota = (function () {
         validarNota = () => {
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
 
-                    let im = new Inputmask({ mask: ["9", "9.9", "99.9"],  numericInput: true})
+                    let im = new Inputmask({ mask: ["9", "9,9", "99,9"],  numericInput: true})
                     im.mask(input);
                     input.addEventListener('keyup', function (e){
-                        if (input.value >10){
+                        if (input.value.replace(",",".") > 10){
                             input.classList.add("bg-light-danger");
                             input.classList.add("text-danger");
                             toastr.options = {

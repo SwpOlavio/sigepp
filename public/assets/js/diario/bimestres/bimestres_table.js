@@ -169,25 +169,26 @@ var Bimestre = (function () {
                                                         <a href="#" class="fw-bold text-hover-primary mb-1 texto ${item.status_aluno === "MTR" ? "text-dark ":"text-decoration-line-through text-danger"}">${item.nome}</a>
                                                         <div>
                                                         <span class="text-muted fw-semibold fs-7">Numero: ${item.numero}</span>
-                                                        <span class="text-muted fw-semibold fs-7"> - Status: ${item.status_aluno}</span>
+                                                        <span class="text-muted fw-semibold fs-7"> - Status: ${item.status_aluno !== "MTR" ? " Transferido": item.status_aluno}</span>
                                                         </div>
-</div>
-
+                                                    </div>
                                                     </div>
                                                 </div>
                                             </td>`;
                                     data.tipos.forEach(function (item2,i){
-                                        html += `<th class="min-w-50px text-center">${listaNotas[i]}</th>`
+
+                                        html += `<th class="min-w-50px text-center">${ item.status_aluno === "MTR" ? listaNotas[i].replace(".",",") : "-"}</th>`
                                     })
 
                                  html += `<td class="text-center">
                                                <div class="w-50px text-center">
-                                                    <input readonly type="text" class="form-control texto form-control-solid text-center text-gray-800  ${item.status_aluno === "MTR" ? "bg-light-primary":"bg-light-danger"} " value="${item.media}"/>
+                                                    <input readonly type="text" class="form-control texto form-control-solid text-center text-gray-800
+                                                ${item.status_aluno === "MTR" ? "bg-light-primary":"bg-light-danger"} " value="${item.status_aluno === "MTR" ? item.media.replace(".",",") : "-"}"/>
                                               </div>
                                             </td>
                                             <td class="text-center">
-                                                <a href="javascript:;" class="badge ${item.status_sigla === "ACM" ?
-                                     "badge-light-success text-success":"badge-light-danger text-danger"}  fw-bold text-hover-white mb-1 ">${item.status_sigla}</a>
+                                                <a href="javascript:;" class="badge ${item.status_aluno !== "MTR" ? "badge-light-warning text-warning" : (item.status_sigla === "ACM" ?
+                                     "badge-light-success text-success":"badge-light-danger text-danger")}  fw-bold  mb-1 ">${item.status_aluno !== "MTR" ? item.status_aluno : item.status_sigla}</a>
                                             </td>
                                         </tr>`;
 
@@ -205,6 +206,9 @@ var Bimestre = (function () {
 
                 })
             })
+        }
+        let formartarDecimalBr = function (numero){
+            return numero.toString().replace(".",",")
         }
 
     return {

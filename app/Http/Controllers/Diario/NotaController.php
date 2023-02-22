@@ -455,12 +455,20 @@ class NotaController extends Controller
     public function cadastrar(Request $request){
 
            $tipoNota = TipoNota::where('periodo_id', $request->periodo_id)->get();
-            if ($tipoNota->count() === 0){
+
+
+           if ($tipoNota->count() === 0){
                 if ( $request->tipo_nota_tipo === "Recuperação"){
                     $msg = $this->message->error(title:'Error', message:'Oops! A primeira avaliação não pode ser uma recuperação.')->render();
                     $json = ['resposta' => false,'msn' => $msg];
                     return response()->json($json);
                 }
+            }if ($tipoNota->count() === 4) {
+            if ( $request->tipo_nota_tipo !== "Recuperação"){
+                $msg = $this->message->error(title:'Error', message:'Oops!O limite máximo é de 4 avaliações (Trabalho e prova) e uma recuperação.')->render();
+                $json = ['resposta' => false,'msn' => $msg];
+                return response()->json($json);
+            }
             }else{
                 $resultado = $tipoNota->first(function ($item){
                     return $item->tipo === "Recuperação";
@@ -554,6 +562,13 @@ class NotaController extends Controller
     }
     public function deletar(int $id){
         $tipoNota = TipoNota::find($id);
+        $hasRecuperacao = TipoNota::where('periodo_id', $tipoNota->periodo_id)->where('tipo', "Recuperação")->count();
+        if ($hasRecuperacao > 0 && $tipoNota->tipo !== "Recuperação"){
+            $msn = $this->message->error(title:'error', message: 'Oops! Você não poderá excluir esta avaliação. Excluir primeiro a recuperação.')->render();
+            $json = ['mensagem'=> $msn, 'resposta' => 0];
+            return response()->json($json);
+        }
+
         if (!empty($tipoNota)){
             $notas = Nota::where('tipo_nota_id', $tipoNota->id)->get();
             if (!empty($notas)){
@@ -562,13 +577,16 @@ class NotaController extends Controller
                 }
                 $tipoNota->delete();
             }
-            $json['data'] = $this->message->success(title:'success', message: 'Avaliação excluída com sucesso.')->render();
+            $msn =  $this->message->success(title:'success', message: 'Avaliação excluída com sucesso.')->render();
+            $json = ['mensagem'=> $msn, 'resposta' => 1];
             return response()->json($json);
         }
 
-        $json['data'] = $this->message->success(title:'error', message: 'Erro ao excluir a avaliação.')->render();
+        $msn =  $this->message->success(title:'success', message: 'Erro ao excluir a avaliação.')->render();
+        $json = ['mensagem'=> $msn, 'resposta' => 0];
         return response()->json($json);
     }
+    /*
     public function salvarmedia(int $periodo_id){ // Falta a turma e a disciplina
 
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
@@ -654,8 +672,8 @@ class NotaController extends Controller
         $json = ['salvo'=> $mediaSalva,'msn' => $this->message->success(title:'error', message: 'Erro ao salvar a média.')->render()];
         return response()->json($json);
     }
+    */
 
-    /*
         public function salvarmedia(int $periodo_id){ // Falta a turma e a disciplina
 
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
@@ -666,6 +684,14 @@ class NotaController extends Controller
             ->orderBy('numero')
             ->get();
 
+            $notas = Nota::select('notas.nota','notas.aluno_id','tipo_notas.tipo')
+                ->leftJoin('tipo_notas','tipo_notas.id', 'notas.tipo_nota_id')
+                ->where('notas.periodo_id', $periodo_id)
+                ->where('notas.escola_id', 2)
+                ->where('notas.anoletivo_id', 2)
+                ->orderBy('notas.id')
+                ->get();
+
         $mediaSalva = false;
         $mediaAnual =  Anoletivo::find(2)->media;
 
@@ -673,16 +699,8 @@ class NotaController extends Controller
 
             $mediaBimestral = new MediaBimestral();
 
-            $notas = Nota::select('notas.nota','notas.aluno_id','tipo_notas.tipo')
-                ->leftJoin('tipo_notas','tipo_notas.id', 'notas.tipo_nota_id')
-                ->where('notas.periodo_id', $periodo_id)
-                ->where('notas.aluno_id', $matricula->aluno_id)
-                ->where('notas.escola_id', 2)
-                ->where('notas.anoletivo_id', 2)
-                ->orderBy('notas.aluno_id')
-                ->get();
-
-            $media = $notas->where('tipo', '!=','Recuperação')->avg('nota');
+            $notasAluno = $notas->where('aluno_id', $matricula->aluno_id)->where('tipo','!=','Recuperação');
+            $media = $notasAluno->avg('nota');
 
             if ($media >= $mediaAnual){
                 $mediaBimestral->status = "NAMEDIA";
@@ -700,21 +718,24 @@ class NotaController extends Controller
             $mediaBimestral->escola_id = 2;
             $mediaBimestral->anoletivo_id = 2;
 
-            $notasAluno = $notas;
 
-            foreach ($notasAluno as $nota) {
-                if ($nota->tipo === "Recuperação" && $nota->nota !== null){
+            $alunoNota = $notas->where('aluno_id', $matricula->aluno_id);
+
+            foreach ($alunoNota as $nota) {
+                if ($nota->tipo === "Recuperação"){
                     $mediaBimestral->recuperacao = $nota->nota;
-                    $mediaBimestral->media = $nota['nota'];
-                    if ($media >= $mediaAnual){
-                        $mediaBimestral->status = "NAMEDIA";
-                        $mediaBimestral->status_sigla = "ACM";
-                    }else{
-                        $mediaBimestral->status = "ABAIXOMEDIA";
-                        $mediaBimestral->status_sigla = "ABM";
+                    if ($nota->nota !== null){
+                        $mediaBimestral->media = $nota->nota;
+                        if ( $nota->nota >= $mediaAnual){
+                            $mediaBimestral->status = "NAMEDIA";
+                            $mediaBimestral->status_sigla = "ACM";
+                        }else{
+                            $mediaBimestral->status = "ABAIXOMEDIA";
+                            $mediaBimestral->status_sigla = "ABM";
+                        }
                     }
                 }else{
-                    if (empty($mediaBimestral->nota1)){
+                    if (empty($mediaBimestral->nota1) ){
                         $mediaBimestral->nota1 = $nota->nota;
                     }else if (empty($mediaBimestral->nota2)){
                         $mediaBimestral->nota2 = $nota->nota;
@@ -739,7 +760,7 @@ class NotaController extends Controller
         $json = ['salvo'=> $mediaSalva,'msn' => $this->message->success(title:'error', message: 'Erro ao salvar a média.')->render()];
         return response()->json($json);
     }
-    */
+
     public function abaixodamedia(int $periodo_id){ // Falta a turma e a disciplina
 
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
@@ -755,7 +776,7 @@ class NotaController extends Controller
             ->where('notas.periodo_id', $periodo_id)
             ->where('notas.escola_id', 2)
             ->where('notas.anoletivo_id', 2)
-            ->orderBy('notas.aluno_id')
+            ->orderBy('notas.id')
             ->get();
 
         $mediaAnual =  Anoletivo::find(2)->media;
