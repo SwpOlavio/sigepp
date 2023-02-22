@@ -219,12 +219,14 @@ var Nota = (function () {
                     }
                 });
         },
-        salvarMedia = () => {
-            formB1.querySelectorAll('[data-media-filter="mediabim"]').forEach((btn) => {
+        salvarMedia = (formBimestre) => {
+            formBimestre.querySelectorAll('[data-media-filter="mediabim"]').forEach((btn) => {
                 btn.addEventListener('click', function (e){
                     e.preventDefault()
                     btn.setAttribute("data-kt-indicator", "on")
                     btn.disabled = !0
+
+                    console.log()
 
                         Swal.fire({
                             text: "Você deseja salvar as médias?",
@@ -252,10 +254,10 @@ var Nota = (function () {
                                                     btn.disabled = !1
                                                 }
                                                 btn.removeAttribute("data-kt-indicator", "on")
-                                                formB1.querySelector("[data-btn-filter='limparmediabim']").disabled = !1
-                                                formB1.querySelector("[data-media-filter='notabim']").disabled = !0
-                                                formB1.querySelectorAll(".editar").forEach((el) => el.disabled = !0)
-                                                formB1.querySelectorAll(".remover").forEach((el) => el.disabled = !0)
+                                                formBimestre.querySelector("[data-btn-filter='limparmediabim']").disabled = !1
+                                                formBimestre.querySelector("[data-media-filter='notabim']").disabled = !0
+                                                formBimestre.querySelectorAll(".editar").forEach((el) => el.disabled = !0)
+                                                formBimestre.querySelectorAll(".remover").forEach((el) => el.disabled = !0)
 
                                             })
                                         });
@@ -456,7 +458,10 @@ var Nota = (function () {
             })
             validarNota()
             notaRadio()
-            salvarMedia()
+            salvarMedia(formB1)
+            salvarMedia(formB2)
+            salvarMedia(formB3)
+            salvarMedia(formB4)
         },
         getPeriodo: function (objeto){
                 document.querySelector('#periodo').value = objeto.dataset.periodo_id

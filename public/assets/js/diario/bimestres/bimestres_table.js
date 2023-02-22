@@ -4,10 +4,11 @@ var Bimestre = (function () {
     var t,
         modalElemento,
         modal,
-        p,
         e,
         formB1,
-        formVMB1,
+        formB2,
+        formB3,
+        formB4,
         deletar = () => {
             t = document.querySelectorAll(".deletar")
 
@@ -106,7 +107,10 @@ var Bimestre = (function () {
 
         },
         visualizarMediaBim = (bimestre, form) => {
-            formB1.querySelectorAll("[data-btn-filter='visualizarmediaBim']").forEach(function (el) {
+
+            texto_bimestre
+
+            form.querySelectorAll("[data-btn-filter='visualizarmediaBim']").forEach(function (el) {
                 el.addEventListener("click", function (e) {
                     e.preventDefault()
 
@@ -114,9 +118,10 @@ var Bimestre = (function () {
 
                     fetch(BaseUrl + '/diario/bimestres/visualizarmediaBim/periodo/' + periodo_id).then(response => response.json())
                         .then(data => {
-                            let html = '';
-                            let notas = '';
 
+                            modalElemento.querySelector('#texto_bimestre').innerText = `${bimestre}° Bimestre`
+
+                            let html = '';
                             let tipos = '<th class="ps-4 min-w-300px rounded-start">Nome</th>';
 
                             data.tipos.forEach(function (item){
@@ -195,13 +200,7 @@ var Bimestre = (function () {
                                 lista_medias.insertAdjacentHTML('afterbegin', html)
 
                             })
-
-
-
-
-
                             modal.show()
-
                         });
 
                 })
@@ -214,15 +213,24 @@ var Bimestre = (function () {
     return {
         init: function () {
             formB1 = document.getElementById('formulario_bim1');
+            formB2 = document.getElementById('formulario_bim2');
+            formB3 = document.getElementById('formulario_bim3');
+            formB4 = document.getElementById('formulario_bim4');
+
             modalElemento = document.getElementById('kt_modal_media_visualizar');
             modal = new bootstrap.Modal(modalElemento)
 
 
             limparMediaBim(1, formB1)
+            limparMediaBim(2, formB2)
+            limparMediaBim(3, formB3)
+            limparMediaBim(4, formB4)
+
             visualizarMediaBim(1, formB1)
-            //limparMedia(2, formB2)
-            //limparMedia(3, formB3)
-            //limparMedia(4, formB4)
+            visualizarMediaBim(2, formB2)
+            visualizarMediaBim(3, formB3)
+            visualizarMediaBim(4, formB4)
+
             //deletar()
         }
 

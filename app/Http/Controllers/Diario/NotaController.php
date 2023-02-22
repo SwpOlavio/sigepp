@@ -720,7 +720,7 @@ class NotaController extends Controller
             $mediaBimestral->professor_id = 12;
             $mediaBimestral->turma_id = 4;
             $mediaBimestral->disciplina_id = 9;
-            $mediaBimestral->periodo_id = 1;
+            $mediaBimestral->periodo_id = $periodo_id;
             $mediaBimestral->escola_id = 2;
             $mediaBimestral->anoletivo_id = 2;
 

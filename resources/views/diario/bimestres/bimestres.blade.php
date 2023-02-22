@@ -923,11 +923,11 @@
                                 <h1 class="mb-2">Notas do bimestre</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
-                                <div class="d-flex justify-content-center">
-                                    <div class="text-muted fw-semibold fs-5">Turma B,</div>
-                                    <div class="text-muted fw-semibold fs-5">Matematica,</div>
-                                    <div class="text-muted fw-semibold fs-5">Matutino,</div>
-                                    <div class="text-primary fw-bold fs-5">1° Bimestre</div>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="text-muted fw-semibold fs-5">Turma B,&nbsp; </div>
+                                    <div class="text-muted fw-semibold fs-5">Matematica, &nbsp;</div>
+                                    <div class="text-muted fw-semibold fs-5">Matutino, &nbsp;</div>
+                                    <div class="text-primary fw-bold fs-5" id="texto_bimestre"> 1° Bimestre</div>
                                 </div>
 
                                 <!--end::Description-->
