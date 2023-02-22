@@ -24,7 +24,7 @@ var Nota = (function () {
         submit = () => {
         v = false;
             form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
-                if (input.value > 10){
+                if (input.value.replace(",",".") > 10){
                     toastr.options = {
                         "preventDuplicates": true,
                     }
@@ -45,6 +45,8 @@ var Nota = (function () {
         },
         cadastrarNotas = () => {
 
+            let bimestre = document.querySelector('#bimestre').value
+
             let turma_id = document.querySelector('[name=turma_id]').value
             let disciplina_id = document.querySelector('[name=disciplina_id]').value
             let data_nota = document.querySelector('[name=data_nota]').value
@@ -64,6 +66,16 @@ var Nota = (function () {
                 }
                 dadosInput.push(dado)
             });
+
+            let hasValor = dadosInput.some(el => el.nota > 0)
+
+            if (!hasValor){
+               let opcoes = toastr.options = {
+                   "preventDuplicates": true,
+                   "positionClass": "toastr-top-center"
+               }
+               toastr.error("Oops! Digite uma nota.", "Erro" , opcoes);
+           }
 
             formData.set("notas",JSON.stringify(dadosInput))
             formData.set("tipo_nota_id",tipo_nota_id)
@@ -164,7 +176,7 @@ var Nota = (function () {
                         objetoItem.insertAdjacentHTML('afterend', html)
                         objetoItem.remove()
                     }else{
-                        let b =  document.querySelector('#b1')
+                        let b =  document.querySelector(`#b${bimestre}`)
                         b.insertAdjacentHTML('beforeend', html)
                     }
                     objetoItem = undefined
@@ -399,10 +411,11 @@ var Nota = (function () {
         init: function () {
 
             formB1 = document.getElementById('formulario_bim1');
-
+            formB2 = document.getElementById('formulario_bim2');
+            formB3 = document.getElementById('formulario_bim3');
+            formB4 = document.getElementById('formulario_bim4');
 
             cancelButton = document.getElementById('kt_modal_cancelar');
-
 
             modalNota = document.querySelector('#kt_modal_nota')
             modal = new bootstrap.Modal(modalNota)
@@ -417,7 +430,15 @@ var Nota = (function () {
                 form.reset()
             })
 
-            dataInput = $("#data_nota").flatpickr({ enableTime: !1, dateFormat: "d/m/Y" })
+            dataInput = $("#data_nota").flatpickr({
+                enableTime: !1,
+                dateFormat: "d/m/Y",
+                disable: [
+                    function (date){
+                        return date.getDay() === 0
+                    }
+                ]
+            })
 
             btnSalvar = document.querySelector("#btn_salvar_notas");
             btnSalvar.addEventListener('click', function (e){
@@ -440,6 +461,7 @@ var Nota = (function () {
         getPeriodo: function (objeto){
                 document.querySelector('#periodo').value = objeto.dataset.periodo_id
                 document.querySelector('#tipo_nota_id').value = 0
+                document.querySelector('#bimestre').value = objeto.dataset.bimestre
                 let radios = document.querySelector('#radios')
                 if (radios.classList.contains("d-none")){
                     radios.classList.remove('d-none')

@@ -529,6 +529,12 @@ class NotaController extends Controller
             $json = ['resposta' => false,'msn' => $msg];
             return response()->json($json);
         }
+        if ($request->tipo_nota_tipo !== 'Recuperação' && $tipoNota->tipo === 'Recuperação'){
+
+            $msg = $this->message->error(title:'Error', message:'Oops! Não foi possível alterar a recuperação para outro tipo de avaliação.')->render();
+            $json = ['resposta' => false,'msn' => $msg];
+            return response()->json($json);
+        }
 
         $tipoNota->data = $request->tipo_nota_data;
         $tipoNota->tipo = $request->tipo_nota_tipo;

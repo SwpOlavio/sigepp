@@ -230,12 +230,18 @@
             </div>
             <!--end::Informações-->
             <!--end::Informações-->
-            <form action="{{route('diario.conteudo.faltas.salvarFaltas')}}" id="formulario_bim1" method="post">
-                @csrf
-                <div class="row g-5 g-xl-5 ">
-                    <div class="col-xl-6">
-                        <!--begin::List Widget 4-->
-                        <div class="card  card-xl-stretch mb-xl-8">
+
+            <!--begin::Row-->
+
+            <!--end::Row-->
+            <!--begin::Row-->
+            <div class="row gx-5 gx-xl-10">
+                <!--begin::Col-->
+                <div class="col-xl-6 mb-5 mb-xl-8 ">
+
+                    <form id="formulario_bim1">
+                    <!--begin::Table widget 9-->
+                        <div class="card card-xl-stretch mb-xl-1">
                             <!--begin::Header-->
                             <div class="card-header border-0 pt-5">
                                 <h3 class="card-title align-items-start flex-column">
@@ -244,14 +250,14 @@
                                 </h3>
                                 <div class="card-toolbar">
                                     <!--begin:: Se o primeiro bimestre está salvo-->
-                                        <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} data-periodo_id="{{$periodos[0]->id}}"  class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
-                                                onclick="Nota.getPeriodo(this)" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button >
+                                    <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} data-periodo_id="{{$periodos[0]->id}}" data-bimestre="1"  class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
+                                            onclick="Nota.getPeriodo(this)" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button >
 
-                                        <button {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[0]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
-                                            <span class="indicator-label">Média</span>
-                                            <span class="indicator-progress">Aguarde
-									        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
+                                    <button {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[0]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
+                                        <span class="indicator-label">Média</span>
+                                        <span class="indicator-progress">Aguarde
+                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
                                     <!--end::Menu-->
                                 </div>
                             </div>
@@ -259,63 +265,313 @@
                             <!--begin::Body-->
                             <div class="d-flex flex-column card-body justify-content-between pt-5">
                                 <!--begin::Item-->
-                                    <div id="b1">
-                                        @if(!empty($bimestre1))
+                                <div id="b1">
+                                    @if(!empty($bimestre1))
                                         @foreach($bimestre1 as $bimestre)
-                                                <div class="d-flex align-items-sm-center mb-7 item ">
-                                                    <div class="symbol symbol-50px me-5">
-													<span class="symbol-label bg-light-primary">
-														<span class="svg-icon svg-icon-primary svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="currentColor"/>
-                                                        <path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="currentColor"/>
-                                                        </svg>
+                                            <div class="d-flex align-items-sm-center mb-7 item ">
+                                                <div class="symbol symbol-50px me-5">
+                                                        <span class="symbol-label bg-light-primary">
+                                                            <span class="svg-icon svg-icon-primary svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="currentColor"/>
+                                                            <path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="currentColor"/>
+                                                            </svg>
+                                                            </span>
                                                         </span>
-													</span>
+                                                </div>
+                                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                    <div class="flex-grow-1 me-2">
+                                                        <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $bimestre->tipo }}</a>
+                                                        <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
                                                     </div>
-                                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                                                        <div class="flex-grow-1 me-2">
-                                                            <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $bimestre->tipo }}</a>
-                                                            <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
-                                                        </div>
-                                                        <div class="d-flex align-items-center me-1" id="painel">
-                                                            <a target="_blank" href="javascript:;"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4">
-                                                                <i class="fa-solid fa-download fs-6"></i>
-                                                            </a>
-                                                            <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
-                                                                <i class="fa-solid fa-pen fs-6"></i>
-                                                            </button>
-                                                            <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
-                                                                <i class="fa-solid fa-trash fs-6"></i>
-                                                            </button>
-                                                        </div>
+                                                    <div class="d-flex align-items-center me-1" id="painel">
+                                                        <a target="_blank" href="javascript:;"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4">
+                                                            <i class="fa-solid fa-download fs-6"></i>
+                                                        </a>
+                                                        <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                            <i class="fa-solid fa-pen fs-6"></i>
+                                                        </button>
+                                                        <button type="button" {{$mediasSalvas->get(0)['salvo'] ? "disabled='true'":""}} onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                                            <i class="fa-solid fa-trash fs-6"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
+                                            </div>
                                         @endforeach
-                                        @endif
-                                    </div>
-                                <div>
-                                <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
-                                <div class="separator separator-dashed separator-content  mt-12 mb-5">
-                                    <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
-                                    <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
-                                    <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
-                                    <button class="btn btn-icon me-5" data-btn-filter="visualizarmediaBim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
-                                    <button class="btn btn-icon" {{!$mediasSalvas->get(0)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
+                                    @endif
                                 </div>
+                                <div>
+                                    <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
+                                    <div class="separator separator-dashed separator-content  mt-12 mb-5">
+                                        <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
+                                        <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5" data-btn-filter="visualizarmediaBim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
+                                        <button class="btn btn-icon" {{!$mediasSalvas->get(0)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[0]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
+                                    </div>
                                 </div>
                                 <!--end::Item-->
                             </div>
                             <!--end::Body-->
                         </div>
-                        <!--end::List Widget 4-->
-                    </div>
-
+                    </form>
+                    <!--end::Table Widget 9-->
                 </div>
-            </form>
+                <!--end::Col-->
+                <!--begin::Col-->
+                <div class="col-xl-6 mb-5 mb-xl-8 ">
+                    <!--begin::Table widget 10-->
+                    <form id="formulario_bim2">
+                        <!--begin::Table widget 9-->
+                        <div class="card card-xl-stretch mb-xl-1">
+                            <!--begin::Header-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">2° Bimestre</span>
+                                    <span class="text-muted mt-1 fw-bold fs-7">Lançamento de notas.</span>
+                                </h3>
+                                <div class="card-toolbar">
+                                    <!--begin:: Se o primeiro bimestre está salvo-->
+                                    <button type="button" {{$mediasSalvas->get(1)['salvo'] ? "disabled='true'":""}} data-periodo_id="{{$periodos[1]->id}}" data-bimestre="2" class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
+                                            onclick="Nota.getPeriodo(this)" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button >
+
+                                    <button {{$mediasSalvas->get(1)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[1]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
+                                        <span class="indicator-label">Média</span>
+                                        <span class="indicator-progress">Aguarde
+                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                    <!--end::Menu-->
+                                </div>
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="d-flex flex-column card-body justify-content-between pt-5">
+                                <!--begin::Item-->
+                                <div id="b2">
+                                    @if(!empty($bimestre2))
+                                        @foreach($bimestre2 as $bimestre)
+                                            <div class="d-flex align-items-sm-center mb-7 item ">
+                                                <div class="symbol symbol-50px me-5">
+                                                        <span class="symbol-label bg-light-primary">
+                                                            <span class="svg-icon svg-icon-primary svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="currentColor"/>
+                                                            <path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="currentColor"/>
+                                                            </svg>
+                                                            </span>
+                                                        </span>
+                                                </div>
+                                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                    <div class="flex-grow-1 me-2">
+                                                        <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $bimestre->tipo }}</a>
+                                                        <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center me-1" id="painel">
+                                                        <a target="_blank" href="javascript:;"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4">
+                                                            <i class="fa-solid fa-download fs-6"></i>
+                                                        </a>
+                                                        <button type="button" {{$mediasSalvas->get(1)['salvo'] ? "disabled='true'":""}} onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                            <i class="fa-solid fa-pen fs-6"></i>
+                                                        </button>
+                                                        <button type="button" {{$mediasSalvas->get(1)['salvo'] ? "disabled='true'":""}} onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                                            <i class="fa-solid fa-trash fs-6"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
+                                    <div class="separator separator-dashed separator-content  mt-12 mb-5">
+                                        <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
+                                        <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5" data-btn-filter="visualizarmediaBim" data-periodo_id="{{$periodos[1]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
+                                        <button class="btn btn-icon" {{!$mediasSalvas->get(1)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[1]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
+                                    </div>
+                                </div>
+                                <!--end::Item-->
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </form>
+                    <!--end::Table Widget 10-->
+                </div>
+                <!--end::Col-->
+            </div>
+
+            <div class="row gx-5 gx-xl-10">
+                <!--begin::Col-->
+                <div class="col-xl-6 mb-5 mb-xl-10">
+                    <!--begin::Table widget 10-->
+                    <form id="formulario_bim3">
+                        <!--begin::Table widget 9-->
+                        <div class="card card-xl-stretch mb-xl-8">
+                            <!--begin::Header-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">3° Bimestre</span>
+                                    <span class="text-muted mt-1 fw-bold fs-7">Lançamento de notas.</span>
+                                </h3>
+                                <div class="card-toolbar">
+                                    <!--begin:: Se o primeiro bimestre está salvo-->
+                                    <button type="button" {{$mediasSalvas->get(2)['salvo'] ? "disabled='true'":""}} data-periodo_id="{{$periodos[2]->id}}" data-bimestre="3"  class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
+                                            onclick="Nota.getPeriodo(this)" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button >
+
+                                    <button {{$mediasSalvas->get(2)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[2]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
+                                        <span class="indicator-label">Média</span>
+                                        <span class="indicator-progress">Aguarde
+                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                    <!--end::Menu-->
+                                </div>
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="d-flex flex-column card-body justify-content-between pt-5">
+                                <!--begin::Item-->
+                                <div id="b3">
+                                    @if(!empty($bimestre3))
+                                        @foreach($bimestre3 as $bimestre)
+                                            <div class="d-flex align-items-sm-center mb-7 item ">
+                                                <div class="symbol symbol-50px me-5">
+                                                        <span class="symbol-label bg-light-primary">
+                                                            <span class="svg-icon svg-icon-primary svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="currentColor"/>
+                                                            <path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="currentColor"/>
+                                                            </svg>
+                                                            </span>
+                                                        </span>
+                                                </div>
+                                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                    <div class="flex-grow-1 me-2">
+                                                        <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $bimestre->tipo }}</a>
+                                                        <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center me-1" id="painel">
+                                                        <a target="_blank" href="javascript:;"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4">
+                                                            <i class="fa-solid fa-download fs-6"></i>
+                                                        </a>
+                                                        <button type="button" {{$mediasSalvas->get(2)['salvo'] ? "disabled='true'":""}} onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                            <i class="fa-solid fa-pen fs-6"></i>
+                                                        </button>
+                                                        <button type="button" {{$mediasSalvas->get(2)['salvo'] ? "disabled='true'":""}} onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                                            <i class="fa-solid fa-trash fs-6"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
+                                    <div class="separator separator-dashed separator-content  mt-12 mb-5">
+                                        <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
+                                        <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5" data-btn-filter="visualizarmediaBim" data-periodo_id="{{$periodos[2]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
+                                        <button class="btn btn-icon" {{!$mediasSalvas->get(2)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[2]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
+                                    </div>
+                                </div>
+                                <!--end::Item-->
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </form>
+                    <!--end::Table Widget 10-->
+                </div>
+                <!--end::Col-->
+                <!--begin::Col-->
+                <div class="col-xl-6 mb-5 mb-xl-10">
+                    <!--begin::Table widget 10-->
+                    <form id="formulario_bim4">
+                        <!--begin::Table widget 9-->
+                        <div class="card card-xl-stretch mb-xl-8">
+                            <!--begin::Header-->
+                            <div class="card-header border-0 pt-5">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">4° Bimestre</span>
+                                    <span class="text-muted mt-1 fw-bold fs-7">Lançamento de notas.</span>
+                                </h3>
+                                <div class="card-toolbar">
+                                    <!--begin:: Se o primeiro bimestre está salvo-->
+                                    <button type="button" {{$mediasSalvas->get(3)['salvo'] ? "disabled='true'":""}} data-periodo_id="{{$periodos[3]->id}}" data-bimestre="4" class="btn btn-primary me-3 desativar"  data-media-filter="notabim"
+                                            onclick="Nota.getPeriodo(this)" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">Nota</button >
+
+                                    <button {{$mediasSalvas->get(3)['salvo'] ? "disabled='true'":""}}  data-periodo_id="{{$periodos[3]->id}}" data-btn="1" data-media-filter="mediabim" class="bt1 btn btn-danger">
+                                        <span class="indicator-label">Média</span>
+                                        <span class="indicator-progress">Aguarde
+                                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                    <!--end::Menu-->
+                                </div>
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Body-->
+                            <div class="d-flex flex-column card-body justify-content-between pt-5">
+                                <!--begin::Item-->
+                                <div id="b4">
+                                    @if(!empty($bimestre4))
+                                        @foreach($bimestre4 as $bimestre)
+                                            <div class="d-flex align-items-sm-center mb-7 item ">
+                                                <div class="symbol symbol-50px me-5">
+                                                        <span class="symbol-label bg-light-primary">
+                                                            <span class="svg-icon svg-icon-primary svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path opacity="0.3" d="M21.25 18.525L13.05 21.825C12.35 22.125 11.65 22.125 10.95 21.825L2.75 18.525C1.75 18.125 1.75 16.725 2.75 16.325L4.04999 15.825L10.25 18.325C10.85 18.525 11.45 18.625 12.05 18.625C12.65 18.625 13.25 18.525 13.85 18.325L20.05 15.825L21.35 16.325C22.35 16.725 22.35 18.125 21.25 18.525ZM13.05 16.425L21.25 13.125C22.25 12.725 22.25 11.325 21.25 10.925L13.05 7.62502C12.35 7.32502 11.65 7.32502 10.95 7.62502L2.75 10.925C1.75 11.325 1.75 12.725 2.75 13.125L10.95 16.425C11.65 16.725 12.45 16.725 13.05 16.425Z" fill="currentColor"/>
+                                                            <path d="M11.05 11.025L2.84998 7.725C1.84998 7.325 1.84998 5.925 2.84998 5.525L11.05 2.225C11.75 1.925 12.45 1.925 13.15 2.225L21.35 5.525C22.35 5.925 22.35 7.325 21.35 7.725L13.05 11.025C12.45 11.325 11.65 11.325 11.05 11.025Z" fill="currentColor"/>
+                                                            </svg>
+                                                            </span>
+                                                        </span>
+                                                </div>
+                                                <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                    <div class="flex-grow-1 me-2">
+                                                        <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bolder">{{ $bimestre->tipo }}</a>
+                                                        <span class="text-gray-700 fw-bold d-block fs-7">{{ $bimestre->data}}</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center me-1" id="painel">
+                                                        <a target="_blank" href="javascript:;"  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4">
+                                                            <i class="fa-solid fa-download fs-6"></i>
+                                                        </a>
+                                                        <button type="button" {{$mediasSalvas->get(3)['salvo'] ? "disabled='true'":""}} onclick='Nota.getNotas({{ collect($bimestre)}}, this.parentNode.parentNode.parentNode)'  class="editar btn btn-icon btn-light btn-active-color-primary btn-sm border-0 me-4" data-bs-toggle="modal" data-bs-target="#kt_modal_nota">
+                                                            <i class="fa-solid fa-pen fs-6"></i>
+                                                        </button>
+                                                        <button type="button" {{$mediasSalvas->get(3)['salvo'] ? "disabled='true'":""}} onclick='Nota.deletar({{ $bimestre->tipo_nota_id }}, this.parentNode.parentNode.parentNode)' class="remover btn btn-icon btn-light btn-active-color-danger btn-sm border-0">
+                                                            <i class="fa-solid fa-trash fs-6"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="separator separator-content my-4"><span class="w-250px fw-bold">Mais opções</span></div>
+                                    <div class="separator separator-dashed separator-content  mt-12 mb-5">
+                                        <button class="btn btn-icon me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Baixar Relatório"><i class="las la-print text-warning fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5 d-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Bimestre Fechado"><i class="las la-lock-open text-success fs-1"></i></button>
+                                        <button class="btn btn-icon me-5 " data-bs-toggle="tooltip" data-bs-placement="top" title="Fechar Bimestre"><i class="las la-lock text-danger fs-1 "></i></button>
+                                        <button class="btn btn-icon me-5" data-btn-filter="visualizarmediaBim" data-periodo_id="{{$periodos[3]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizar notas"><i class="las la-file-alt text-info fs-1"></i></button>
+                                        <button class="btn btn-icon" {{!$mediasSalvas->get(3)['salvo'] ? "disabled='disabled'":""}} data-btn-filter="limparmediabim" data-periodo_id="{{$periodos[3]->id}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Limpar Média"><i class="bi bi-eraser-fill text-primary fs-1"></i></button>
+                                    </div>
+                                </div>
+                                <!--end::Item-->
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </form>
+                    <!--end::Table Widget 10-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <!--end::Row-->
+
+            <!--end::Row-->
 
             <div class="my-2">
                 <a href="{{ route('diario.conteudo.turma.disciplina',['turma' => $turma->id,'disciplina' => $disciplina->id])}}" class="btn d-block d-sm-none   btn-danger mb-3">Encerrar</a>
             </div>
+
             <!--end::Products-->
         </div>
         <!--end::Container-->
@@ -343,10 +599,11 @@
                     <!--begin::Modal body-->
                     <div class="modal-body mx-xl-10 pt-0 pb-0">
                         <div>
-                            <input type="hidden" name="turma_id"  value="{{$turma->id}}"/>
-                            <input type="hidden" name="disciplina_id"  value="{{$disciplina->id}}"/>
-                            <input type="hidden" class="link-primary fw-bold" id="periodo" value="0"/>
-                            <input type="hidden" class="link-primary fw-bold" id="tipo_nota_id" value="0"/>
+                            <input type="text" name="turma_id"  value="{{$turma->id}}"/>
+                            <input type="text" name="disciplina_id"  value="{{$disciplina->id}}"/>
+                            <input type="text" class="link-primary fw-bold" id="periodo" value="0"/>
+                            <input type="text" class="link-primary fw-bold" id="tipo_nota_id" value="0"/>
+                            <input type="text" class="link-primary fw-bold" id="bimestre" value="0"/>
                             <input type="hidden" id="medias_salvas"  value="{{$mediasSalvas ? $mediasSalvas : 0}}"/>
                         </div>
                         <form  id="formulario-notas" method="post">
