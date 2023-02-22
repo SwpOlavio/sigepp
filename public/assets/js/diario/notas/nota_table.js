@@ -336,7 +336,12 @@ var Nota = (function () {
         if (e.params.data.text === "Recuperação") {
             fetch(BaseUrl + '/diario/nota/periodo/'+periodo+"/abaixodamedia").then(response => response.json())
                 .then(data => {
-                    listaAlunos = data;
+                    listaAlunos = data.dados;
+                    if (data.hasTipo){
+                        let opcoes = toastr.options = {"positionClass": "toastr-top-center"}
+                        toastr.error('Já existe uma recuperação cadastrada.', opcoes)
+                        return
+                    }
                     form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
 
                         for (let i = 0; i < listaAlunos.length; i++) {
@@ -357,27 +362,31 @@ var Nota = (function () {
                 });
         }
         else{
-            if (listaAlunos !== undefined){
-                form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
-
-                        for (let i = 0; i < listaAlunos.length; i++) {
-
-                            if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ABM" && input.dataset.aluno_status === "MTR"){
-
-                                if (input.classList.contains('bg-light-success')){
-                                    input.classList.remove('bg-light-success')
-                                }
-                                input.classList.add('bg-light-primary')
-                                break
-                            }else if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ACM" && input.dataset.aluno_status === "MTR"){
-                                input.readOnly = !1;
-                            }
-                        }
-                    })
-                listaAlunos = undefined;
-            }
+            limparInputRecuperacao()
         }
     });
+    let limparInputRecuperacao = function () {
+
+        if (listaAlunos !== undefined){
+            form.querySelectorAll('[data-nota-filter="nota"]').forEach((input) => {
+
+                for (let i = 0; i < listaAlunos.length; i++) {
+
+                    if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ABM" && input.dataset.aluno_status === "MTR"){
+
+                        if (input.classList.contains('bg-light-success')){
+                            input.classList.remove('bg-light-success')
+                        }
+                        input.classList.add('bg-light-primary')
+                        break
+                    }else if (Number(listaAlunos[i].aluno_id) === Number(input.dataset.aluno_id) && listaAlunos[i].status_sigla === "ACM" && input.dataset.aluno_status === "MTR"){
+                        input.readOnly = !1;
+                    }
+                }
+            })
+            listaAlunos = undefined;
+        }
+    }
 
     return {
         init: function () {
@@ -397,6 +406,7 @@ var Nota = (function () {
                 document.querySelector('#tipo_nota_id').value = 0
                 document.querySelector('#periodo').value = 0
                 tipoNotaInput.val("Trabalho").trigger('change')
+                limparInputRecuperacao()
                 form.reset()
             })
 

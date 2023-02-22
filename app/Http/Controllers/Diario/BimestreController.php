@@ -22,6 +22,132 @@ class BimestreController extends Controller
 {
     public function listar(Turma $turma, Disciplina $disciplina)
     {
+        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
+            ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
+            ->where('matriculas.turma_id', 4)
+            ->where('matriculas.escola_id', 2)
+            ->where('matriculas.anoletivo_id', 2)
+            ->orderBy('numero')
+            ->get();
+
+        $notas = DB::select('select
+                    notas.nota,
+                    notas.aluno_id,
+                    tipo_notas.tipo
+                    from notas
+                    left join tipo_notas on tipo_notas.id = notas.tipo_nota_id
+                    where notas.periodo_id = :periodo_id
+                    and notas.escola_id = :escola_id
+                    and notas.anoletivo_id = :anoletivo_id',
+                    ['periodo_id' => 1,'escola_id' => 2, 'anoletivo_id' => 2]);
+
+        //dump($notas->where('aluno_id', 3));
+
+        $lista = [];
+        foreach ($matriculas as $matricula){
+            $valor = collect(array_filter($notas, function ($v, $k) use ($matricula){
+                return $v->aluno_id === $matricula->aluno_id &&  $v->tipo !== "Recuperação";
+            }, ARRAY_FILTER_USE_BOTH))->avg('nota');
+            $lista[] = $valor;
+        }
+
+        $lista2 = [];
+        foreach ($matriculas as $matricula){
+            $notasAluno = collect($notas);
+            $notasAluno = $notasAluno->where('aluno_id', $matricula->aluno_id);
+            foreach ($notasAluno as $nota){
+                $lista2[$nota->aluno_id][] = $nota->nota;
+            }
+            //dump($notasAluno);
+        }
+
+
+
+
+       // dd($lista2);
+
+
+
+
+//        $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
+//            ->leftJoin('alunos','alunos.id','matriculas.aluno_id')
+//            ->where('matriculas.turma_id', 4)
+//            ->where('matriculas.escola_id', 2)
+//            ->where('matriculas.anoletivo_id', 2)
+//            ->orderBy('numero')
+//            ->get();
+//
+//        $notas2 = Nota::select('notas.nota','notas.aluno_id','tipo_notas.tipo')
+//            ->leftJoin('tipo_notas','tipo_notas.id', 'notas.tipo_nota_id')
+//            ->where('notas.periodo_id', 1)
+//            ->where('notas.escola_id', 2)
+//            ->where('notas.anoletivo_id', 2)
+//            ->orderBy('notas.aluno_id')
+//            ->get();
+//        $notas = $notas2;
+//
+//        $notasArray = collect($notas)->toArray();
+//
+//
+//        $mediaAnual =  Anoletivo::find(2)->media;
+//
+//        $listaMedia = [];
+//
+//        foreach ($matriculas as $matricula) {
+//
+//            $mediaBimestral = new MediaBimestral();
+//            $lista = collect();
+//            $lista2 = collect();
+//            foreach ($notasArray as $nota){
+//                if ($nota['aluno_id'] === $matricula->aluno_id && $nota['tipo'] !== "Recuperação"){
+//                    $lista->push($nota);
+//                }
+//                if ($nota['aluno_id'] === $matricula->aluno_id){
+//                    $lista2->push($nota);
+//                }
+//            }
+//
+//            $media = $lista->avg('nota');
+//
+//            if ($media >= $mediaAnual){
+//                $mediaBimestral->status = "NAMEDIA";
+//                $mediaBimestral->status_sigla = "ACM";
+//            }else{
+//                $mediaBimestral->status = "ABAIXOMEDIA";
+//                $mediaBimestral->status_sigla = "ABM";
+//            }
+//            $mediaBimestral->media = $media;
+//            $mediaBimestral->aluno_id = $matricula->aluno_id;
+//
+//
+//            $notasAluno = $lista2;
+//
+//            foreach ($notasAluno as $nota) {
+//                if ($nota['tipo'] === "Recuperação" && $nota['nota'] !== null){
+//                    $mediaBimestral->recuperacao = $nota['nota'];
+//                    $mediaBimestral->media = $nota['nota'];
+//                }else{
+//                    if (empty($mediaBimestral->nota1)){
+//                        $mediaBimestral->nota1 = $nota['nota'];
+//                    }else if (empty($mediaBimestral->nota2)){
+//                        $mediaBimestral->nota2 = $nota['nota'];
+//                    }else if (empty($mediaBimestral->nota3)){
+//                        $mediaBimestral->nota3 = $nota['nota'];
+//                    }else if (empty($mediaBimestral->nota4)){
+//                        $mediaBimestral->nota4 = $nota['nota'];
+//                    }
+//                }
+//            }
+//            $listaMedia[] = $mediaBimestral;
+//
+//        }
+//
+//
+//            dd($listaMedia);
+
+
+
+
 
 
         $matriculas = Matricula::select('matriculas.id', 'matriculas.numero','matriculas.serie', 'matriculas.aluno_id','matriculas.data','alunos.nome','alunos.aluno_inep')
